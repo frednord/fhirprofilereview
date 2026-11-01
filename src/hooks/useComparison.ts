@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { HVO_LABELS } from '../core/profiles/hvo/0.5.1'
 import { HVO_IG_MANIFEST } from '../core/profiles/hvoManifest'
-import { compareResources, inspectInput, type CompareOutcome, type InputStatus } from '../core/reporting'
+import type { ChangeKind } from '../core/diff'
+import { CHANGE_KINDS, compareResources, inspectInput, type CompareOutcome, type InputStatus } from '../core/reporting'
 
 /** Changes on every save, so it hides the changes a reviewer is looking for. */
 export const LAST_UPDATED_PATH = 'meta.lastUpdated'
@@ -19,13 +20,14 @@ export interface ComparisonState {
   hideLastUpdated: boolean
   canCompare: boolean
   outcome: CompareOutcome | undefined
-  /** Increases with every click on Jämför, so the result view can reset its filters. */
-  runId: number
+  /** Change kinds shown in the summary. Kept across comparisons, since it is the user's own choice. */
+  shownKinds: ReadonlySet<ChangeKind>
   /** True when an input was edited after the shown result was made. */
   stale: boolean
   setBeforeText: (text: string) => void
   setAfterText: (text: string) => void
   setHideLastUpdated: (hide: boolean) => void
+  toggleKind: (kind: ChangeKind) => void
   compare: () => void
   swap: () => void
   load: (before: string, after: string) => void
@@ -41,7 +43,7 @@ export function useComparison(): ComparisonState {
   const [afterText, setAfterText] = useState('')
   const [hideLastUpdated, setHideLastUpdated] = useState(true)
   const [snapshot, setSnapshot] = useState<Snapshot | undefined>(undefined)
-  const [runId, setRunId] = useState(0)
+  const [shownKinds, setShownKinds] = useState<ReadonlySet<ChangeKind>>(() => new Set(CHANGE_KINDS))
 
   const beforeStatus = useMemo(() => inspectInput(beforeText), [beforeText])
   const afterStatus = useMemo(() => inspectInput(afterText), [afterText])
@@ -57,7 +59,15 @@ export function useComparison(): ComparisonState {
 
   const run = (before: string, after: string): void => {
     setSnapshot({ before, after })
-    setRunId((id) => id + 1)
+  }
+
+  const toggleKind = (kind: ChangeKind): void => {
+    setShownKinds((current) => {
+      const next = new Set(current)
+      if (next.has(kind)) next.delete(kind)
+      else next.add(kind)
+      return next
+    })
   }
 
   return {
@@ -68,11 +78,12 @@ export function useComparison(): ComparisonState {
     hideLastUpdated,
     canCompare: beforeStatus.ok && afterStatus.ok,
     outcome,
-    runId,
+    shownKinds,
     stale: snapshot !== undefined && (snapshot.before !== beforeText || snapshot.after !== afterText),
     setBeforeText,
     setAfterText,
     setHideLastUpdated,
+    toggleKind,
     compare: () => run(beforeText, afterText),
     swap: () => {
       setBeforeText(afterText)

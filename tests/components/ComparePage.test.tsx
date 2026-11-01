@@ -84,13 +84,34 @@ describe('ComparePage', () => {
     expect(within(result()).getByRole('heading', { name: '1 tillagd, 2 borttagna, 3 ändrade' })).toBeInTheDocument()
   })
 
-  it('filters the list by kind', () => {
+  it('filters the summary by kind with checkboxes, all checked from the start', () => {
     render(<ComparePage />)
     fireEvent.click(screen.getByRole('button', { name: 'Visa exempel' }))
+    const filter = within(result()).getByRole('group', { name: 'Visa i sammanfattningen:' })
+    for (const name of [/Tillagda/, /Borttagna/, /Ändrade/]) {
+      expect(within(filter).getByRole('checkbox', { name })).toBeChecked()
+    }
     expect(within(result()).getAllByRole('listitem')).toHaveLength(5)
-    fireEvent.click(within(result()).getByRole('button', { name: '2 ändrade' }))
+
+    fireEvent.click(within(filter).getByRole('checkbox', { name: /Ändrade/ }))
+    expect(within(result()).getByRole('heading', { name: '1 tillagd, 2 borttagna' })).toBeInTheDocument()
+    expect(within(result()).getByText(/Visar 3 av 5 ändringar\./)).toBeInTheDocument()
     expect(within(result()).getAllByRole('listitem')).toHaveLength(3)
     expect(within(result()).queryByText(/^Namn ändrades/)).not.toBeInTheDocument()
+
+    fireEvent.click(within(filter).getByRole('checkbox', { name: /Tillagda/ }))
+    fireEvent.click(within(filter).getByRole('checkbox', { name: /Borttagna/ }))
+    expect(within(result()).getByRole('heading', { name: 'Inga ändringstyper valda' })).toBeInTheDocument()
+    expect(within(result()).queryAllByRole('listitem')).toHaveLength(0)
+  })
+
+  it('keeps the chosen kinds when comparing again', () => {
+    render(<ComparePage />)
+    fireEvent.click(screen.getByRole('button', { name: 'Visa exempel' }))
+    fireEvent.click(within(result()).getByRole('checkbox', { name: /Ändrade/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Jämför' }))
+    expect(within(result()).getByRole('checkbox', { name: /Ändrade/ })).not.toBeChecked()
+    expect(within(result()).getAllByRole('listitem')).toHaveLength(3)
   })
 
   it('notes when an input changed after the comparison', () => {

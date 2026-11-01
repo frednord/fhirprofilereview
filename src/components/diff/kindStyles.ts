@@ -11,3 +11,10 @@ export const KIND_BADGE_CLASSES: Readonly<Record<ChangeKind, string>> = {
   removed: 'bg-red-100 text-red-800 border-red-200',
   changed: 'bg-amber-100 text-amber-900 border-amber-200',
 }
+
+/** Plural labels for the filter, which picks whole groups of changes. */
+export const KIND_FILTER_LABELS: Readonly<Record<ChangeKind, string>> = {
+  added: 'Tillagda',
+  removed: 'Borttagna',
+  changed: 'Ändrade',
+}
