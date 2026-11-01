@@ -4,22 +4,21 @@ interface IgInfoProps {
   manifest: IgManifest
 }
 
+/** One line, so the inputs stay above the fold. */
 export function IgInfo({ manifest }: IgInfoProps) {
   const pinned = isPinnedVersion(manifest.version)
   return (
-    <section aria-labelledby="ig-info-heading" className="rounded-lg border border-slate-200 bg-white p-4">
-      <h2 id="ig-info-heading" className="font-medium text-slate-900">
-        Implementationsguide
-      </h2>
-      <p className="text-slate-700">
+    <section
+      aria-label="Implementationsguide"
+      className="flex flex-wrap gap-x-4 gap-y-1 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600"
+    >
+      <span className="font-medium text-slate-900">
         {manifest.title}, {manifest.publisher}
-      </p>
-      <p className={pinned ? 'text-sm text-slate-600' : 'text-sm text-amber-700'}>
-        Version: {describeIgVersion(manifest)} · FHIR {manifest.fhirVersion}
-      </p>
-      <p className="mt-2 text-sm text-slate-600">
-        Profiler: {manifest.profiles.map((profile) => profile.name).join(', ')}
-      </p>
+      </span>
+      <span className={pinned ? undefined : 'text-amber-700'}>
+        {describeIgVersion(manifest)} · FHIR {manifest.fhirVersion}
+      </span>
+      <span>Profiler: {manifest.profiles.map((profile) => profile.name).join(', ')}</span>
     </section>
   )
 }
