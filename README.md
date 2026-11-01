@@ -91,6 +91,28 @@ Det är deterministiskt och utan AI.
   övriga koder, t.ex. verksamhetskoder, visas som rå kod. Kommun- och länskod har
   samma `system` och skiljs åt på värdets längd.
 
+## Jämförelsesidan
+
+Sidan på GitHub Pages jämför två versioner av en resurs. Klistra in JSON eller
+ladda upp filer i fälten Före och Efter och klicka på **Jämför**. **Visa
+exempel** fyller fälten med ett HVO-exempel ur IG:n och en redigerad kopia.
+Allt körs i webbläsaren; inget skickas till någon server.
+
+- **All logik ligger i `compareResources`** i `src/core/reporting`. Den läser
+  båda texterna, kör diff-motorn och de svenska beskrivningarna och returnerar
+  antal per typ, varningar på svenska och hur många ändringar som doldes.
+  Sidan (`src/pages/ComparePage.tsx`, `src/hooks/useComparison.ts`) ritar bara
+  upp resultatet.
+- **`meta.lastUpdated` döljs** från start, eftersom den ändras vid varje
+  sparning. Sidan säger hur många ändringar som doldes.
+- **Ogiltig JSON** får rad och kolumn på svenska. Chrome och Node säger inte
+  längre var `JSON.parse` stannade, så `src/core/parser/jsonErrorLocation.ts`
+  hittar platsen själv.
+- **Jämförelsen körs bara vid klick**, så resultatet hoppar inte medan man
+  skriver. Ändras en text efteråt visas en påminnelse.
+- Ändringar utan svensk etikett märks "saknar svensk etikett", så att luckor i
+  etikettdatan syns.
+
 ## Testdata
 
 `tests/fixtures/se.electronichealth.fhir.hvo.r5@0.5.1/` innehåller oförändrade

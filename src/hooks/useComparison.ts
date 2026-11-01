@@ -1,0 +1,87 @@
+import { useMemo, useState } from 'react'
+import { HVO_LABELS } from '../core/profiles/hvo/0.5.1'
+import { HVO_IG_MANIFEST } from '../core/profiles/hvoManifest'
+import { compareResources, inspectInput, type CompareOutcome, type InputStatus } from '../core/reporting'
+
+/** Changes on every save, so it hides the changes a reviewer is looking for. */
+export const LAST_UPDATED_PATH = 'meta.lastUpdated'
+
+interface Snapshot {
+  before: string
+  after: string
+}
+
+export interface ComparisonState {
+  beforeText: string
+  afterText: string
+  beforeStatus: InputStatus
+  afterStatus: InputStatus
+  hideLastUpdated: boolean
+  canCompare: boolean
+  outcome: CompareOutcome | undefined
+  /** Increases with every click on Jämför, so the result view can reset its filters. */
+  runId: number
+  /** True when an input was edited after the shown result was made. */
+  stale: boolean
+  setBeforeText: (text: string) => void
+  setAfterText: (text: string) => void
+  setHideLastUpdated: (hide: boolean) => void
+  compare: () => void
+  swap: () => void
+  load: (before: string, after: string) => void
+}
+
+/**
+ * Page state for the comparison. The comparison only runs on compare(), not on
+ * every keystroke, so the result does not jump while the user is typing.
+ * Toggling the hide setting re-runs on the inputs that were compared.
+ */
+export function useComparison(): ComparisonState {
+  const [beforeText, setBeforeText] = useState('')
+  const [afterText, setAfterText] = useState('')
+  const [hideLastUpdated, setHideLastUpdated] = useState(true)
+  const [snapshot, setSnapshot] = useState<Snapshot | undefined>(undefined)
+  const [runId, setRunId] = useState(0)
+
+  const beforeStatus = useMemo(() => inspectInput(beforeText), [beforeText])
+  const afterStatus = useMemo(() => inspectInput(afterText), [afterText])
+
+  const outcome = useMemo(() => {
+    if (snapshot === undefined) return undefined
+    return compareResources(snapshot.before, snapshot.after, {
+      labels: HVO_LABELS,
+      ig: HVO_IG_MANIFEST,
+      ignorePaths: hideLastUpdated ? [LAST_UPDATED_PATH] : [],
+    })
+  }, [snapshot, hideLastUpdated])
+
+  const run = (before: string, after: string): void => {
+    setSnapshot({ before, after })
+    setRunId((id) => id + 1)
+  }
+
+  return {
+    beforeText,
+    afterText,
+    beforeStatus,
+    afterStatus,
+    hideLastUpdated,
+    canCompare: beforeStatus.ok && afterStatus.ok,
+    outcome,
+    runId,
+    stale: snapshot !== undefined && (snapshot.before !== beforeText || snapshot.after !== afterText),
+    setBeforeText,
+    setAfterText,
+    setHideLastUpdated,
+    compare: () => run(beforeText, afterText),
+    swap: () => {
+      setBeforeText(afterText)
+      setAfterText(beforeText)
+    },
+    load: (before, after) => {
+      setBeforeText(before)
+      setAfterText(after)
+      run(before, after)
+    },
+  }
+}
