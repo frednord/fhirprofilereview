@@ -1,0 +1,48 @@
+import type { FhirResource } from '../../types/fhir'
+import { getString } from '../parser/narrowing'
+import { isPinnedVersion, type IgManifest } from '../profiles/igManifest'
+import { diffValue } from './diffValue'
+import { createIgnoreMatcher } from './ignorePaths'
+import { DEFAULT_LIST_MATCH_KEYS } from './listMatchKeys'
+import type { DiffChange, DiffIgContext, DiffOptions, DiffResult, DiffWarning } from './types'
+
+function igContext(manifest: IgManifest): DiffIgContext {
+  return { packageId: manifest.packageId, version: manifest.version, pinned: isPinnedVersion(manifest.version) }
+}
+
+function collectWarnings(before: FhirResource, after: FhirResource): DiffWarning[] {
+  const warnings: DiffWarning[] = []
+  if (before.resourceType !== after.resourceType) {
+    warnings.push({ kind: 'resource-type-mismatch', before: before.resourceType, after: after.resourceType })
+  }
+  const beforeId = getString(before, 'id')
+  const afterId = getString(after, 'id')
+  // Comparing a resource with a new, id-less version is common, so only two different ids are flagged.
+  if (beforeId !== undefined && afterId !== undefined && beforeId !== afterId) {
+    warnings.push({ kind: 'id-mismatch', before: beforeId, after: afterId })
+  }
+  return warnings
+}
+
+/**
+ * Compares two versions of a FHIR resource and lists what was added, removed
+ * and changed. Deterministic: the same input always gives the same output,
+ * ordered by position in the after version.
+ *
+ * Different resource types or ids are reported as warnings, not errors, so the
+ * user still sees the full comparison and can judge for themselves.
+ */
+export function diffResources(before: FhirResource, after: FhirResource, options: DiffOptions = {}): DiffResult {
+  const changes: DiffChange[] = []
+  diffValue(before, after, {
+    path: [],
+    elementPath: after.resourceType,
+    matchKeys: { ...DEFAULT_LIST_MATCH_KEYS, ...options.matchKeys },
+    isIgnored: createIgnoreMatcher(options.ignorePaths ?? []),
+    changes,
+  })
+
+  const result: DiffResult = { resourceType: after.resourceType, changes, warnings: collectWarnings(before, after) }
+  if (options.ig !== undefined) result.ig = igContext(options.ig)
+  return result
+}

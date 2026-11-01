@@ -1,0 +1,159 @@
+{
+  "resourceType": "Bundle",
+  "id": "58e286ab-601c-401a-bd2f-48b1a66bb889",
+  "link": [
+    {
+      "relation": "self",
+      "url": "[base]/Organization/123-456-678/$provider-and-healthcare-unit-for-unit-by-id"
+    }
+  ],
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "9c18b9db-049c-4524-8779-e4d4beebed90",
+        "contained": [
+          {
+            "resourceType": "HealthcareService",
+            "id": "BusinessInPeriodontics",
+            "providedBy": {
+              "reference": "#"
+            },
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "1811",
+                    "system": "urn:oid:1.2.752.129.2.2.1.3"
+                  }
+                ]
+              }
+            ],
+            "location": [
+              {
+                "reference": "Location/b15b2882-d807-43e1-8f63-119a684d085a"
+              }
+            ]
+          }
+        ],
+        "extension": [
+          {
+            "url": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganizationActiveStatusExtension",
+            "valueBoolean": true
+          },
+          {
+            "valuePeriod": {
+              "start": "1970-01-01"
+            },
+            "url": "http://hl7.org/fhir/StructureDefinition/organization-period"
+          }
+        ],
+        "identifier": [
+          {
+            "system": "urn:oid:1.2.752.29.4.19",
+            "value": "SE3829576812-3V5P"
+          },
+          {
+            "system": "http://electronichealth.se/identifier/organizationalUnit",
+            "value": "9c18b9db-049c-4524-8779-e4d4beebed90"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "code": "43741000",
+                "system": "http://snomed.info/sct"
+              }
+            ]
+          }
+        ],
+        "contact": [
+          {
+            "purpose": {
+              "coding": [
+                {
+                  "code": "PROF",
+                  "system": "http://electronichealth.se/CodeSystem/fhir/hvo-extended-contact-entity-type"
+                }
+              ]
+            },
+            "telecom": [
+              {
+                "system": "fax",
+                "value": "+46382956789"
+              }
+            ],
+            "period": {
+              "start": "1970-01-01"
+            }
+          }
+        ],
+        "name": "Specialisttandvård inom parodontologi",
+        "partOf": {
+          "reference": "Organization/50efe090-0948-4a41-9f5e-254ac69e3a7b"
+        }
+      },
+      "fullUrl": "[base]/Organization/9c18b9db-049c-4524-8779-e4d4beebed90"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "50efe090-0948-4a41-9f5e-254ac69e3a7b",
+        "extension": [
+          {
+            "url": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganizationActiveStatusExtension",
+            "valueBoolean": true
+          },
+          {
+            "valuePeriod": {
+              "start": "2025-05-29T22:00:00+00:00"
+            },
+            "url": "http://hl7.org/fhir/StructureDefinition/organization-period"
+          },
+          {
+            "url": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganizationLegalFormExtension",
+            "valueCoding": {
+              "code": "84",
+              "system": "http://electronichealth.se/CodeSystem/skatteverket-jurform"
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "urn:oid:1.2.752.29.4.19",
+            "value": "SE1482756382-4T6Y"
+          },
+          {
+            "system": "urn:oid:2.5.4.97",
+            "value": "5738295730"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "code": "143591000052106",
+                "system": "http://snomed.info/sct"
+              }
+            ]
+          }
+        ],
+        "contact": [
+          {
+            "address": {
+              "line": [
+                "Box 1234"
+              ],
+              "city": "Örebro",
+              "postalCode": "70116"
+            }
+          }
+        ],
+        "name": "Region Örebro"
+      },
+      "fullUrl": "[base]/Organization/50efe090-0948-4a41-9f5e-254ac69e3a7b"
+    }
+  ],
+  "type": "searchset"
+}

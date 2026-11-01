@@ -1,0 +1,23 @@
+{
+  "resourceType": "Organization",
+  "id": "6a15466a-c806-4a77-92d9-cd6baa2ea4de",
+  "extension": [
+    {
+      "url": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganizationActiveStatusExtension",
+      "valueBoolean": true
+    },
+    {
+      "valuePeriod": {
+        "start": "1973-03-03"
+      },
+      "url": "http://hl7.org/fhir/StructureDefinition/organization-period"
+    }
+  ],
+  "partOf": {
+    "reference": "Organization/67d45d19-740e-4002-af41-3a62e3e2ea2e"
+  },
+  "alias": [
+    "Avd 17"
+  ],
+  "name": "Avdelning 17 Medväst"
+}

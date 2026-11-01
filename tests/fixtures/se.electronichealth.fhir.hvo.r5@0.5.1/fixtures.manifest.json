@@ -1,0 +1,52 @@
+{
+  "packageId": "se.electronichealth.fhir.hvo.r5",
+  "version": "0.5.1",
+  "fhirVersion": "5.0.0",
+  "source": "https://simplifier.net/packages/se.electronichealth.fhir.hvo.r5/0.5.1/files",
+  "downloadUrlTemplate": "https://simplifier.net/ui/packagefile/downloadas?packageName=se.electronichealth.fhir.hvo.r5&version=0.5.1&packageFileId={packageFileId}&format=json",
+  "retrieved": "2026-11-01",
+  "files": [
+    {
+      "file": "bundle-58e286ab-601c-401a-bd2f-48b1a66bb889.json",
+      "packagePath": "package/examples/bundle-58e286ab-601c-401a-bd2f-48b1a66bb889.json",
+      "packageFileId": 3912250,
+      "sha256": "980f5ec07cfa236516ffe7864229b55ed3095d116537807222957d65acfd4c64"
+    },
+    {
+      "file": "healthcareservice-0621be80-e786-4b5d-beb5-c20faadf9a25.json",
+      "packagePath": "package/examples/healthcareservice-0621be80-e786-4b5d-beb5-c20faadf9a25.json",
+      "packageFileId": 3912194,
+      "sha256": "1a1f6b8c3cb8362a0b2f45916bacdc131e4ab5ee0c7ab0dbb7de58a6af7eaef0"
+    },
+    {
+      "file": "location-253e11a2-4f15-41a6-abc9-59cc80867540.json",
+      "packagePath": "package/examples/location-253e11a2-4f15-41a6-abc9-59cc80867540.json",
+      "packageFileId": 3912238,
+      "sha256": "6135230c4026bd1a5e601ae9119ab047d7e163467aed5450b54aaff9619fb79e"
+    },
+    {
+      "file": "location-wardlocation1.json",
+      "packagePath": "package/examples/location-wardlocation1.json",
+      "packageFileId": 3912170,
+      "sha256": "87be0bf6f927f558493b984490cc5119f0d4b59f1702bbd3987f8ce5a5838622"
+    },
+    {
+      "file": "organization-11aa1f8f-b5df-4e2d-97b8-15320352ac85.json",
+      "packagePath": "package/examples/organization-11aa1f8f-b5df-4e2d-97b8-15320352ac85.json",
+      "packageFileId": 3912240,
+      "sha256": "2bab647479bc9e3fd2422eed32847b619dd9493aef18df07e16582025edc15ab"
+    },
+    {
+      "file": "organization-6a15466a-c806-4a77-92d9-cd6baa2ea4de.json",
+      "packagePath": "package/examples/organization-6a15466a-c806-4a77-92d9-cd6baa2ea4de.json",
+      "packageFileId": 3912234,
+      "sha256": "0d5f638906ff1eed475764099f754ff87ed272e114a7df70861988591bcc75f2"
+    },
+    {
+      "file": "organization-ff585a36-aa0d-4cba-acbd-12cedcf370b6.json",
+      "packagePath": "package/examples/organization-ff585a36-aa0d-4cba-acbd-12cedcf370b6.json",
+      "packageFileId": 3912190,
+      "sha256": "cacb80be5b0e8f9db1019d9f9638e90a17a6a2f4cb3eaae4ede8904d058c1f77"
+    }
+  ]
+}
