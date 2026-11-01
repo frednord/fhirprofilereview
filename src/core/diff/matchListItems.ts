@@ -1,5 +1,5 @@
 import type { JsonValue } from '../../types/json'
-import { getPrimitiveAtPath } from '../parser/narrowing'
+import { getOwn, getPrimitiveAtPath } from '../parser/narrowing'
 import { jsonEqual } from './jsonEqual'
 import { DEFAULT_LIST_MATCH_KEYS, type ListMatchKeyConfig, type MatchKey } from './listMatchKeys'
 
@@ -132,7 +132,7 @@ export function matchListItems(
   after: readonly JsonValue[],
   config: ListMatchKeyConfig = DEFAULT_LIST_MATCH_KEYS,
 ): ListItemPair[] {
-  return matchListItemsByKeys(config[elementName] ?? [], before, after)
+  return matchListItemsByKeys(getOwn(config, elementName) ?? [], before, after)
 }
 
 /** Same as matchListItems, with the keys already resolved by the caller. */

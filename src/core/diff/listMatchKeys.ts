@@ -1,3 +1,5 @@
+import { getOwn } from '../parser/narrowing'
+
 /**
  * Keys used to pair up items in repeating FHIR elements before diffing them.
  *
@@ -44,6 +46,5 @@ export const DEFAULT_LIST_MATCH_KEYS: ListMatchKeyConfig = {
 
 /** Resolves the keys for a list, preferring an exact element path over the element name. */
 export function resolveMatchKeys(config: ListMatchKeyConfig, elementPath: string, elementName: string): readonly MatchKey[] {
-  if (Object.hasOwn(config, elementPath)) return config[elementPath] ?? []
-  return config[elementName] ?? []
+  return getOwn(config, elementPath) ?? getOwn(config, elementName) ?? []
 }

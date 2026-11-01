@@ -2,7 +2,7 @@ import { formatPath } from '../diff/formatPath'
 import type { DiffChange, DiffResult, PathSegment } from '../diff/types'
 import type { FhirResource } from '../../types/fhir'
 import type { JsonObject, JsonValue } from '../../types/json'
-import { getArray, getPrimitiveAtPath, getString, isJsonArray, isJsonObject } from '../parser/narrowing'
+import { getArray, getOwn, getPrimitiveAtPath, getString, isJsonArray, isJsonObject } from '../parser/narrowing'
 import { codeLabel, codingName, formatValue } from './formatValue'
 import type { ChangeDescription, ItemCondition, LabelSet, ProfileLabels, SliceLabel } from './types'
 
@@ -93,7 +93,7 @@ function resourceName(profiles: readonly ProfileLabels[], resource: JsonObject):
 
 function findElementLabel(profiles: readonly ProfileLabels[], elementPath: string): string | undefined {
   for (const profile of profiles) {
-    const label = profile.elements[elementPath]
+    const label = getOwn(profile.elements, elementPath)
     if (label !== undefined) return label
   }
   return undefined
@@ -203,7 +203,9 @@ function nameChild(anchor: Anchor, rest: readonly PathSegment[], labels: LabelSe
   const relative = rest.flatMap((s) => (s.kind === 'property' ? [s.name] : [])).join('.')
   const child = stripValueElement(relative, anchor.slice?.valueElement)
   if (child === '') return { label: anchor.label, complete: true }
-  const childLabel = anchor.slice?.children?.[child] ?? labels.childLabels[normaliseChoice(child)]
+  const sliceChildren = anchor.slice?.children
+  const childLabel =
+    (sliceChildren === undefined ? undefined : getOwn(sliceChildren, child)) ?? getOwn(labels.childLabels, normaliseChoice(child))
   if (childLabel !== undefined) return { label: `${anchor.label}, ${childLabel}`, complete: true }
   return { label: `${anchor.label}, ${formatPath(rest)}`, complete: false }
 }

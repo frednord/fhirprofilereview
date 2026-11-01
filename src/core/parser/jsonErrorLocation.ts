@@ -1,3 +1,5 @@
+import { MAX_JSON_DEPTH } from './parseResource'
+
 export interface TextLocation {
   line: number
   column: number
@@ -14,6 +16,11 @@ class SyntaxStop {
   constructor(readonly offset: number) {}
 }
 
+/** Thrown when nesting passes MAX_JSON_DEPTH; the scanner is recursive and must not overflow the stack. */
+class DepthStop {
+  readonly reason = 'too-deep'
+}
+
 const LITERALS = ['true', 'false', 'null'] as const
 const NUMBER_PATTERN = /-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?/y
 // JSON strings may not contain raw control characters, so the pattern has to name them.
@@ -27,6 +34,7 @@ const STRING_PATTERN = /"(?:[^"\\\u0000-\u001f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4}
  */
 class Scanner {
   private pos = 0
+  private depth = 0
 
   constructor(private readonly text: string) {}
 
@@ -74,10 +82,13 @@ class Scanner {
   }
 
   private container(close: string, isObject: boolean): void {
+    this.depth += 1
+    if (this.depth > MAX_JSON_DEPTH) throw new DepthStop()
     this.pos += 1
     this.skipSpace()
     if (this.text.charAt(this.pos) === close) {
       this.pos += 1
+      this.depth -= 1
       return
     }
     for (;;) {
@@ -92,6 +103,7 @@ class Scanner {
       const next = this.text.charAt(this.pos)
       if (next === close) {
         this.pos += 1
+        this.depth -= 1
         return
       }
       if (next !== ',') this.stop()
@@ -100,13 +112,17 @@ class Scanner {
   }
 }
 
-/** Where the text stops being valid JSON, or undefined when it is valid. */
+/**
+ * Where the text stops being valid JSON, or undefined when it is valid or nested
+ * too deeply to locate the error safely.
+ */
 export function locateJsonError(text: string): TextLocation | undefined {
   try {
     new Scanner(text).scanDocument()
     return undefined
   } catch (error) {
     if (error instanceof SyntaxStop) return locationOfOffset(text, error.offset)
+    if (error instanceof DepthStop) return undefined
     throw error
   }
 }
