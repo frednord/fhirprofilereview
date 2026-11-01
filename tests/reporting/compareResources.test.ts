@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { HVO_LABELS } from '../../src/core/profiles/hvo/0.5.1'
 import { HVO_IG_MANIFEST } from '../../src/core/profiles/hvoManifest'
-import { compareResources, inspectInput, type CompareSettings } from '../../src/core/reporting'
+import { compareResources, inspectInput, INTERNAL_ERROR_MESSAGE, type CompareSettings } from '../../src/core/reporting'
 import { DEMO_AFTER, DEMO_BEFORE, demoText } from '../../src/pages/demoExample'
 import { loadFixture, rawFixture } from '../helpers/hvoFixtures'
 
@@ -36,11 +36,20 @@ describe('inspectInput', () => {
 describe('compareResources', () => {
   it('reports both inputs when one cannot be read', () => {
     const outcome = compareResources('{', rawFixture(UNIT), SETTINGS)
-    expect(outcome.ok).toBe(false)
-    if (!outcome.ok) {
-      expect(outcome.before.ok).toBe(false)
-      expect(outcome.after.ok).toBe(true)
+    if (outcome.ok || outcome.reason !== 'invalid-input') throw new Error('Förväntade ogiltig indata')
+    expect(outcome.before.ok).toBe(false)
+    expect(outcome.after.ok).toBe(true)
+  })
+
+  it('returns an internal error instead of throwing when the analysis fails', () => {
+    const labels = {
+      ...HVO_LABELS,
+      get profiles(): never {
+        throw new Error('boom')
+      },
     }
+    const outcome = compareResources(rawFixture(UNIT), withMeta('x'), { ...SETTINGS, labels })
+    expect(outcome).toEqual({ ok: false, reason: 'internal-error', message: INTERNAL_ERROR_MESSAGE, detail: 'boom' })
   })
 
   it('hides meta.lastUpdated and counts what it hid', () => {

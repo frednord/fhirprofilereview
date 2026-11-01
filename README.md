@@ -35,9 +35,14 @@ Se `CLAUDE.md` för arkitekturen. Det viktigaste:
   `getOwn` i `src/core/parser/narrowing.ts`, så att fältnamn som `constructor`
   eller `toString` inte träffar `Object.prototype`. `parseResource` avvisar JSON
   som är djupare än `MAX_JSON_DEPTH` (100 nivåer), eftersom diffen och
-  beskrivningarna är rekursiva och annars kan spränga anropsstacken. En
-  `ErrorBoundary` runt sidan visar ett felmeddelande i stället för en tom sida
-  om något ändå kastar. Testerna ligger i `tests/security/`.
+  beskrivningarna är rekursiva och annars kan spränga anropsstacken. Testerna
+  ligger i `tests/security/`.
+- **Ett internt fel tömmer aldrig fälten.** `inspectInput` och
+  `compareResources` i `src/core/reporting/compareResources.ts` kastar inte.
+  Ett oväntat fel blir ett utfall med `reason: 'internal-error'`, som sidan
+  visar i resultatytan medan båda resurserna ligger kvar. Felets meddelande
+  loggas i konsolen, men aldrig resurserna. `ErrorBoundary` runt sidan är
+  sista skyddet för fel i själva renderingen, och den börjar om med tomma fält.
 - **IG-versionen är låst.** `src/core/profiles/hvoManifest.ts` anger vilken
   paketversion profiler och testdata kommer från. Versioner som `current`
   räknas inte som låsta och markeras i UI:t.

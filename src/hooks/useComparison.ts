@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { HVO_LABELS } from '../core/profiles/hvo/0.5.1'
 import { HVO_IG_MANIFEST } from '../core/profiles/hvoManifest'
 import type { ChangeKind } from '../core/diff'
@@ -61,6 +61,11 @@ export function useComparison(): ComparisonState {
       ignorePaths: hideLastUpdated ? [LAST_UPDATED_PATH] : [],
     })
   }, [snapshot, hideLastUpdated])
+
+  useEffect(() => {
+    // Only the error message is logged, never the pasted resources.
+    if (outcome?.ok === false && outcome.reason === 'internal-error') console.error(outcome.detail)
+  }, [outcome])
 
   const run = (before: string, after: string): void => {
     setSnapshot({ before, after })

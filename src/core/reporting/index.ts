@@ -4,6 +4,7 @@ export {
   HIDE_LAST_UPDATED_BY_DEFAULT,
   LAST_UPDATED_PATH,
   inspectInput,
+  INTERNAL_ERROR_MESSAGE,
   type CompareOutcome,
   type CompareSettings,
   type Comparison,

@@ -36,9 +36,21 @@ export interface Comparison {
   hiddenCount: number
 }
 
+/** Shown when the analysis itself fails, so the user knows the input is kept and nothing was sent. */
+export const INTERNAL_ERROR_MESSAGE =
+  'Jämförelsen kunde inte genomföras på grund av ett internt fel. Resurserna finns kvar i fälten och inget har skickats någonstans.'
+
+const INPUT_INTERNAL_ERROR_MESSAGE = 'Texten kunde inte läsas på grund av ett internt fel. Den finns kvar i fältet.'
+
 export type CompareOutcome =
   | { ok: true; comparison: Comparison }
-  | { ok: false; before: InputStatus; after: InputStatus }
+  | { ok: false; reason: 'invalid-input'; before: InputStatus; after: InputStatus }
+  /** detail is the error's own message, for the console only; it is never shown on the page. */
+  | { ok: false; reason: 'internal-error'; message: string; detail: string }
+
+function errorDetail(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
 
 /**
  * Reads one input and says, in Swedish, what it is or why it cannot be used.
@@ -46,6 +58,16 @@ export type CompareOutcome =
  * browser's own message is in English and often says nothing about where.
  */
 export function inspectInput(text: string): InputStatus {
+  // Runs on every keystroke. An unexpected error here would reach the error
+  // boundary, which resets the page and throws away what the user pasted.
+  try {
+    return readInput(text)
+  } catch {
+    return { ok: false, empty: false, message: INPUT_INTERNAL_ERROR_MESSAGE }
+  }
+}
+
+function readInput(text: string): InputStatus {
   const parsed = parseResource(text)
   if (parsed.ok) {
     const { resource } = parsed
@@ -75,25 +97,33 @@ export function describeWarning(warning: DiffWarning): string {
 export function compareResources(beforeText: string, afterText: string, settings: CompareSettings): CompareOutcome {
   const before = inspectInput(beforeText)
   const after = inspectInput(afterText)
-  if (!before.ok || !after.ok) return { ok: false, before, after }
+  if (!before.ok || !after.ok) return { ok: false, reason: 'invalid-input', before, after }
 
+  // The diff and the descriptions run on arbitrary user input. An error is
+  // returned instead of thrown, so the page keeps both inputs instead of
+  // falling back to the error boundary, which starts over with empty fields.
+  try {
+    return { ok: true, comparison: compare(before.resource, after.resource, settings) }
+  } catch (error) {
+    return { ok: false, reason: 'internal-error', message: INTERNAL_ERROR_MESSAGE, detail: errorDetail(error) }
+  }
+}
+
+function compare(before: FhirResource, after: FhirResource, settings: CompareSettings): Comparison {
   const options = settings.ig === undefined ? {} : { ig: settings.ig }
-  const diff = diffResources(before.resource, after.resource, { ...options, ignorePaths: settings.ignorePaths })
+  const diff = diffResources(before, after, { ...options, ignorePaths: settings.ignorePaths })
   // Diffing again without ignorePaths is the simplest way to count exactly what the setting hid.
   const hiddenCount =
     settings.ignorePaths.length === 0
       ? 0
-      : diffResources(before.resource, after.resource, options).changes.length - diff.changes.length
-  const descriptions = describeChanges(before.resource, after.resource, diff, settings.labels)
+      : diffResources(before, after, options).changes.length - diff.changes.length
+  const descriptions = describeChanges(before, after, diff, settings.labels)
 
   return {
-    ok: true,
-    comparison: {
-      diff,
-      descriptions,
-      counts: countChanges(descriptions),
-      warnings: diff.warnings.map(describeWarning),
-      hiddenCount,
-    },
+    diff,
+    descriptions,
+    counts: countChanges(descriptions),
+    warnings: diff.warnings.map(describeWarning),
+    hiddenCount,
   }
 }
