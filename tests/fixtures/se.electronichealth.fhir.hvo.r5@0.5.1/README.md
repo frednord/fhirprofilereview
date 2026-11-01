@@ -1,6 +1,6 @@
 # HVO-exempel som testdata
 
-Exempelfiler från E-hälsomyndighetens paket `se.electronichealth.fhir.hvo.r5@0.5.1`
+Exempelfiler, StructureDefinitions och ValueSets från E-hälsomyndighetens paket `se.electronichealth.fhir.hvo.r5@0.5.1`
 (FHIR 5.0.0), som är paketet bakom guiden
 [OrganizationContractOffering 0.5.0](https://simplifier.net/guide/organizationcontractoffering?version=0.5.0).
 

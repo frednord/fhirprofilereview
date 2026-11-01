@@ -1,0 +1,308 @@
+{
+  "resourceType": "StructureDefinition",
+  "id": "HVOBusiness",
+  "url": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOBusiness",
+  "version": "0.1.0",
+  "name": "HVOBusiness",
+  "status": "active",
+  "description": "HVOBusiness contains information about work which is conducted within a line of work",
+  "fhirVersion": "5.0.0",
+  "mapping": [
+    {
+      "identity": "HVOBusinessToHVOVerksamhetLogical",
+      "uri": "HVOVerksamhetLogical"
+    }
+  ],
+  "kind": "resource",
+  "abstract": false,
+  "type": "HealthcareService",
+  "baseDefinition": "http://hl7.org/fhir/StructureDefinition/HealthcareService",
+  "derivation": "constraint",
+  "differential": {
+    "element": [
+      {
+        "id": "HealthcareService.providedBy",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organizational-unit-hierarchy-writer-actor-hvo"
+              }
+            ]
+          },
+          {
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation"
+          }
+        ],
+        "path": "HealthcareService.providedBy",
+        "min": 1,
+        "type": [
+          {
+            "code": "Reference",
+            "targetProfile": [
+              "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganizationalUnit"
+            ]
+          }
+        ],
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOBusinessToHVOVerksamhetLogical",
+            "map": "bedriver(HVOOrganisatoriskEnhetLogical)"
+          }
+        ]
+      },
+      {
+        "id": "HealthcareService.providedBy.reference",
+        "path": "HealthcareService.providedBy.reference",
+        "min": 1,
+        "patternString": "#",
+        "mustSupport": true
+      },
+      {
+        "id": "HealthcareService.category",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organizational-unit-hierarchy-writer-actor-hvo"
+              }
+            ]
+          },
+          {
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation"
+          }
+        ],
+        "path": "HealthcareService.category",
+        "short": "What type of goal oriented work is being done, e.g. logopedics.",
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOBusinessToHVOVerksamhetLogical",
+            "map": "inriktning"
+          }
+        ]
+      },
+      {
+        "id": "HealthcareService.category.coding",
+        "path": "HealthcareService.category.coding",
+        "slicing": {
+          "discriminator": [
+            {
+              "type": "value",
+              "path": "system"
+            }
+          ],
+          "rules": "open",
+          "ordered": false,
+          "description": "Slice on CodeableConcept.coding based on the system value"
+        },
+        "min": 1,
+        "max": "1",
+        "mustSupport": true
+      },
+      {
+        "id": "HealthcareService.category.coding:HVOBusinessType",
+        "path": "HealthcareService.category.coding",
+        "sliceName": "HVOBusinessType",
+        "min": 0,
+        "max": "1",
+        "mustSupport": true,
+        "binding": {
+          "strength": "required",
+          "valueSet": "http://electronichealth.se/hvo/ValueSet/hvo-business-category"
+        }
+      },
+      {
+        "id": "HealthcareService.category.coding:HVOBusinessType.system",
+        "path": "HealthcareService.category.coding.system",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "HealthcareService.category.coding:HVOBusinessType.code",
+        "path": "HealthcareService.category.coding.code",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "HealthcareService.category.coding:HSABusinessType",
+        "path": "HealthcareService.category.coding",
+        "sliceName": "HSABusinessType",
+        "min": 0,
+        "max": "1",
+        "mustSupport": true,
+        "binding": {
+          "strength": "required",
+          "valueSet": "http://electronichealth.se/hvo/ValueSet/hvo-business-category-inera"
+        }
+      },
+      {
+        "id": "HealthcareService.category.coding:HSABusinessType.system",
+        "path": "HealthcareService.category.coding.system",
+        "min": 1,
+        "patternUri": "urn:oid:1.2.752.129.2.2.1.3",
+        "mustSupport": true
+      },
+      {
+        "id": "HealthcareService.category.coding:HSABusinessType.code",
+        "path": "HealthcareService.category.coding.code",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "HealthcareService.location",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organizational-unit-hierarchy-writer-actor-hvo"
+              }
+            ]
+          },
+          {
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation"
+          }
+        ],
+        "path": "HealthcareService.location",
+        "type": [
+          {
+            "code": "Reference",
+            "targetProfile": [
+              "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOLocation"
+            ]
+          }
+        ],
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOBusinessToHVOVerksamhetLogical",
+            "map": "bedrivsPa(HVOPlatsLogical)"
+          }
+        ]
+      },
+      {
+        "id": "HealthcareService.availability",
+        "path": "HealthcareService.availability",
+        "mustSupport": true
+      },
+      {
+        "id": "HealthcareService.availability.availableTime",
+        "path": "HealthcareService.availability.availableTime",
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOBusinessToHVOVerksamhetLogical",
+            "map": "harOppetUnder(HVOTillganglighetstidLogical)"
+          }
+        ]
+      },
+      {
+        "id": "HealthcareService.availability.availableTime.daysOfWeek",
+        "path": "HealthcareService.availability.availableTime.daysOfWeek",
+        "min": 1,
+        "mustSupport": true,
+        "binding": {
+          "strength": "required",
+          "valueSet": "http://hl7.org/fhir/ValueSet/days-of-week"
+        }
+      },
+      {
+        "id": "HealthcareService.availability.availableTime.allDay",
+        "path": "HealthcareService.availability.availableTime.allDay",
+        "mustSupport": true
+      },
+      {
+        "id": "HealthcareService.availability.availableTime.availableStartTime",
+        "path": "HealthcareService.availability.availableTime.availableStartTime",
+        "mustSupport": true
+      },
+      {
+        "id": "HealthcareService.availability.availableTime.availableEndTime",
+        "path": "HealthcareService.availability.availableTime.availableEndTime",
+        "mustSupport": true
+      },
+      {
+        "id": "HealthcareService.availability.notAvailableTime",
+        "path": "HealthcareService.availability.notAvailableTime",
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOBusinessToHVOVerksamhetLogical",
+            "map": "harTillganglighetsavvikelse(HVOStorningsinformationLogical)"
+          }
+        ]
+      },
+      {
+        "id": "HealthcareService.availability.notAvailableTime.description",
+        "path": "HealthcareService.availability.notAvailableTime.description",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "HealthcareService.availability.notAvailableTime.during",
+        "path": "HealthcareService.availability.notAvailableTime.during",
+        "mustSupport": true
+      },
+      {
+        "id": "HealthcareService.availability.notAvailableTime.during.start",
+        "path": "HealthcareService.availability.notAvailableTime.during.start",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "HealthcareService.availability.notAvailableTime.during.end",
+        "path": "HealthcareService.availability.notAvailableTime.during.end",
+        "mustSupport": true
+      }
+    ]
+  }
+}

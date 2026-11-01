@@ -1,0 +1,43 @@
+{
+  "resourceType": "ValueSet",
+  "status": "active",
+  "name": "hvo-organization-type",
+  "id": "hvo-organization-type",
+  "title": "Typ av organisation",
+  "description": "Includes types of organizations.",
+  "url": "http://electronichealth.se/hvo/ValueSet/hvo-organization-type",
+  "version": "0.1.0",
+  "useContext": [
+    {
+      "code": {
+        "code": "program"
+      },
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "code": "hvo-organization-business",
+            "display": "Organisation och verksamhet"
+          }
+        ]
+      }
+    }
+  ],
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/45991000052106",
+        "concept": [
+          {
+            "code": "143591000052106",
+            "display": "vårdgivare"
+          },
+          {
+            "code": "654081000052102",
+            "display": "utförare av socialtjänst"
+          }
+        ]
+      }
+    ]
+  }
+}

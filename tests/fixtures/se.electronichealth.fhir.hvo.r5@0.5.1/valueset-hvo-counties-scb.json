@@ -1,0 +1,118 @@
+{
+  "resourceType": "ValueSet",
+  "status": "active",
+  "name": "hvo-counties-scb",
+  "id": "hvo-counties-scb",
+  "title": "Län i Sverige",
+  "description": "Includes numbered counties from Statistikmyndigheten (SCB). External link: https://www.scb.se/contentassets/7a89e48960f741e08918e489ea36354a/kommunlankod_2024.pdf",
+  "url": "http://electronichealth.se/hvo/ValueSet/hvo-counties-scb",
+  "version": "0.1.0",
+  "useContext": [
+    {
+      "code": {
+        "code": "program"
+      },
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "code": "hvo-location",
+            "display": "Plats"
+          }
+        ]
+      }
+    }
+  ],
+  "compose": {
+    "include": [
+      {
+        "system": "http://metadata.scb.se/classifications/RLK",
+        "concept": [
+          {
+            "code": "24",
+            "display": "Västerbottens län"
+          },
+          {
+            "code": "10",
+            "display": "Blekinge län"
+          },
+          {
+            "code": "12",
+            "display": "Skåne län"
+          },
+          {
+            "code": "09",
+            "display": "Gotlands län"
+          },
+          {
+            "code": "25",
+            "display": "Norrbottens län"
+          },
+          {
+            "code": "01",
+            "display": "Stockholms län"
+          },
+          {
+            "code": "03",
+            "display": "Uppsala län"
+          },
+          {
+            "code": "23",
+            "display": "Jämtlands län"
+          },
+          {
+            "code": "22",
+            "display": "Västernorrlands län"
+          },
+          {
+            "code": "21",
+            "display": "Gävleborgs län"
+          },
+          {
+            "code": "04",
+            "display": "Södermanlands län"
+          },
+          {
+            "code": "05",
+            "display": "Östergötlands län"
+          },
+          {
+            "code": "06",
+            "display": "Jönköpings län"
+          },
+          {
+            "code": "07",
+            "display": "Kronobergs län"
+          },
+          {
+            "code": "08",
+            "display": "Kalmar län"
+          },
+          {
+            "code": "13",
+            "display": "Hallands län"
+          },
+          {
+            "code": "14",
+            "display": "Västra Götalands län"
+          },
+          {
+            "code": "17",
+            "display": "Värmlands län"
+          },
+          {
+            "code": "18",
+            "display": "Örebro län"
+          },
+          {
+            "code": "19",
+            "display": "Västmanlands län"
+          },
+          {
+            "code": "20",
+            "display": "Dalarnas län"
+          }
+        ]
+      }
+    ]
+  }
+}

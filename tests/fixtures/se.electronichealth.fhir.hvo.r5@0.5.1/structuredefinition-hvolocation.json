@@ -1,0 +1,551 @@
+{
+  "resourceType": "StructureDefinition",
+  "id": "HVOLocation",
+  "url": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOLocation",
+  "version": "0.1.0",
+  "name": "HVOLocation",
+  "status": "active",
+  "description": "Location profile for HVO",
+  "fhirVersion": "5.0.0",
+  "mapping": [
+    {
+      "identity": "HVOLocationToHVOPlatsLogical",
+      "uri": "HVOPlatsLogical"
+    }
+  ],
+  "kind": "resource",
+  "abstract": false,
+  "type": "Location",
+  "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Location",
+  "derivation": "constraint",
+  "differential": {
+    "element": [
+      {
+        "id": "Location.id",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Location.id",
+        "mustSupport": true
+      },
+      {
+        "id": "Location.extension",
+        "path": "Location.extension",
+        "slicing": {
+          "discriminator": [
+            {
+              "type": "value",
+              "path": "url"
+            }
+          ],
+          "ordered": false,
+          "rules": "open"
+        }
+      },
+      {
+        "id": "Location.extension:period",
+        "path": "Location.extension",
+        "sliceName": "period",
+        "min": 0,
+        "max": "1",
+        "type": [
+          {
+            "code": "Extension",
+            "profile": [
+              "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOLocationPeriodExtension"
+            ]
+          }
+        ],
+        "mustSupport": true
+      },
+      {
+        "id": "Location.extension:period.url",
+        "path": "Location.extension.url",
+        "mustSupport": true
+      },
+      {
+        "id": "Location.extension:period.value[x]",
+        "path": "Location.extension.value[x]",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Location.extension:period.value[x].start",
+        "path": "Location.extension.value[x].start",
+        "constraint": [
+          {
+            "key": "hvo-dateTime-2",
+            "human": "DateTime should be submitted without timestamp",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOLocation",
+            "severity": "error",
+            "expression": "$this.toString().contains('T') = false"
+          }
+        ],
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOLocationToHVOPlatsLogical",
+            "map": "giltigFrom"
+          }
+        ]
+      },
+      {
+        "id": "Location.extension:period.value[x].end",
+        "path": "Location.extension.value[x].end",
+        "constraint": [
+          {
+            "key": "hvo-dateTime-2",
+            "human": "DateTime should be submitted without timestamp",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOLocation",
+            "severity": "error",
+            "expression": "$this.toString().contains('T') = false"
+          }
+        ],
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOLocationToHVOPlatsLogical",
+            "map": "giltigTom"
+          }
+        ]
+      },
+      {
+        "id": "Location.extension:positionSweref",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          },
+          {
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation"
+          }
+        ],
+        "path": "Location.extension",
+        "sliceName": "positionSweref",
+        "min": 0,
+        "max": "1",
+        "type": [
+          {
+            "code": "Extension",
+            "profile": [
+              "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOSweref99PositionExtension"
+            ]
+          }
+        ],
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOLocationToHVOPlatsLogical",
+            "map": "harPosition(HVOPositionLogical)"
+          }
+        ]
+      },
+      {
+        "id": "Location.extension:positionSweref.extension:longitude",
+        "path": "Location.extension.extension",
+        "sliceName": "longitude",
+        "mustSupport": true
+      },
+      {
+        "id": "Location.extension:positionSweref.extension:latitude",
+        "path": "Location.extension.extension",
+        "sliceName": "latitude",
+        "mustSupport": true
+      },
+      {
+        "id": "Location.identifier",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Location.identifier",
+        "slicing": {
+          "discriminator": [
+            {
+              "type": "value",
+              "path": "value"
+            }
+          ],
+          "rules": "open",
+          "ordered": false,
+          "description": "Slice on value based on the type code value"
+        },
+        "max": "1",
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOLocationToHVOPlatsLogical",
+            "map": "id"
+          }
+        ]
+      },
+      {
+        "id": "Location.identifier:municipality",
+        "path": "Location.identifier",
+        "sliceName": "municipality",
+        "short": "Identifier when Location is a municipality (sv: kommun)",
+        "min": 0,
+        "max": "1",
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOLocationToHVOPlatsLogical",
+            "map": "kommunkod"
+          }
+        ]
+      },
+      {
+        "id": "Location.identifier:municipality.system",
+        "path": "Location.identifier.system",
+        "min": 1,
+        "patternUri": "http://metadata.scb.se/classifications/RLK",
+        "mustSupport": true
+      },
+      {
+        "id": "Location.identifier:municipality.value",
+        "path": "Location.identifier.value",
+        "min": 1,
+        "mustSupport": true,
+        "binding": {
+          "strength": "required",
+          "valueSet": "http://electronichealth.se/hvo/ValueSet/hvo-municipalities-scb"
+        }
+      },
+      {
+        "id": "Location.identifier:county",
+        "path": "Location.identifier",
+        "sliceName": "county",
+        "short": "Identifier when Location is a county (sv: län)",
+        "min": 0,
+        "max": "1",
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOLocationToHVOPlatsLogical",
+            "map": "lanskod"
+          }
+        ]
+      },
+      {
+        "id": "Location.identifier:county.system",
+        "path": "Location.identifier.system",
+        "min": 1,
+        "patternUri": "http://metadata.scb.se/classifications/RLK",
+        "mustSupport": true
+      },
+      {
+        "id": "Location.identifier:county.value",
+        "path": "Location.identifier.value",
+        "min": 1,
+        "mustSupport": true,
+        "binding": {
+          "strength": "required",
+          "valueSet": "http://electronichealth.se/hvo/ValueSet/hvo-counties-scb"
+        }
+      },
+      {
+        "id": "Location.identifier:locationAddress",
+        "path": "Location.identifier",
+        "sliceName": "locationAddress",
+        "min": 0,
+        "max": "1",
+        "mustSupport": true
+      },
+      {
+        "id": "Location.identifier:locationAddress.system",
+        "path": "Location.identifier.system",
+        "min": 1,
+        "patternUri": "https://electronichealth.se/identifier/locationAddressLm",
+        "mustSupport": true
+      },
+      {
+        "id": "Location.identifier:locationAddress.value",
+        "path": "Location.identifier.value",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Location.status",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Location.status",
+        "min": 1,
+        "mustSupport": true,
+        "binding": {
+          "strength": "required",
+          "valueSet": "http://hl7.org/fhir/ValueSet/location-status"
+        },
+        "mapping": [
+          {
+            "identity": "HVOLocationToHVOPlatsLogical",
+            "map": "status"
+          }
+        ]
+      },
+      {
+        "id": "Location.name",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Location.name",
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOLocationToHVOPlatsLogical",
+            "map": "namn"
+          }
+        ]
+      },
+      {
+        "id": "Location.description",
+        "path": "Location.description",
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOLocationToHVOPlatsLogical",
+            "map": "beskrivning"
+          }
+        ]
+      },
+      {
+        "id": "Location.address",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Location.address",
+        "mustSupport": true
+      },
+      {
+        "id": "Location.address.extension",
+        "path": "Location.address.extension",
+        "min": 1
+      },
+      {
+        "id": "Location.address.extension:precinct",
+        "path": "Location.address.extension",
+        "sliceName": "precinct",
+        "short": "A subsection of a municipality (sv: kommundel)",
+        "min": 1,
+        "max": "1",
+        "type": [
+          {
+            "code": "Extension",
+            "profile": [
+              "http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-precinct"
+            ]
+          }
+        ],
+        "mustSupport": true
+      },
+      {
+        "id": "Location.address.extension:precinct.url",
+        "path": "Location.address.extension.url",
+        "mustSupport": true
+      },
+      {
+        "id": "Location.address.extension:precinct.value[x]",
+        "path": "Location.address.extension.value[x]",
+        "mustSupport": true
+      },
+      {
+        "id": "Location.address.type",
+        "path": "Location.address.type",
+        "min": 1,
+        "fixedCode": "physical",
+        "mustSupport": true
+      },
+      {
+        "id": "Location.address.line",
+        "path": "Location.address.line",
+        "short": "A line in an address, according to Swedish standard 637003:2025. For example: Sibeliusgången 17, Akalla, Stockholm",
+        "min": 1,
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOLocationToHVOPlatsLogical",
+            "map": "adressrad"
+          }
+        ]
+      },
+      {
+        "id": "Location.address.city",
+        "path": "Location.address.city",
+        "short": "A postal area (sv: postort)",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Location.address.district",
+        "path": "Location.address.district",
+        "short": "A municipality (sv: kommun)",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Location.address.postalCode",
+        "path": "Location.address.postalCode",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Location.form",
+        "path": "Location.form",
+        "mustSupport": true,
+        "binding": {
+          "strength": "required",
+          "valueSet": "http://hl7.org/fhir/ValueSet/location-physical-type"
+        },
+        "mapping": [
+          {
+            "identity": "HVOLocationToHVOPlatsLogical",
+            "map": "typ"
+          }
+        ]
+      },
+      {
+        "id": "Location.form.coding",
+        "path": "Location.form.coding",
+        "min": 1,
+        "max": "1",
+        "mustSupport": true
+      },
+      {
+        "id": "Location.form.coding.system",
+        "path": "Location.form.coding.system",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Location.form.coding.code",
+        "path": "Location.form.coding.code",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Location.position",
+        "path": "Location.position",
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOLocationToHVOPlatsLogical",
+            "map": "harPosition(HVOPositionWGS84Logical)"
+          }
+        ]
+      },
+      {
+        "id": "Location.position.longitude",
+        "path": "Location.position.longitude",
+        "mustSupport": true
+      },
+      {
+        "id": "Location.position.latitude",
+        "path": "Location.position.latitude",
+        "mustSupport": true
+      },
+      {
+        "id": "Location.partOf",
+        "path": "Location.partOf",
+        "type": [
+          {
+            "code": "Reference",
+            "targetProfile": [
+              "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOLocation"
+            ],
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/structuredefinition-hierarchy",
+                "valueBoolean": true
+              }
+            ]
+          }
+        ],
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOLocationToHVOPlatsLogical",
+            "map": "arEnDelAv(HVOPlatsLogical)"
+          }
+        ]
+      }
+    ]
+  }
+}

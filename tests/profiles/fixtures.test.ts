@@ -22,6 +22,6 @@ describe('HVO fixtures', () => {
   })
 
   it.each(manifest.files)('$file parses as a FHIR resource', ({ file }) => {
-    expect(loadFixture(file).resourceType).toMatch(/^(Bundle|Organization|HealthcareService|Location)$/)
+    expect(loadFixture(file).resourceType).toMatch(/^(Bundle|Organization|HealthcareService|Location|StructureDefinition|ValueSet)$/)
   })
 })

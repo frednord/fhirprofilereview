@@ -1,0 +1,39 @@
+{
+  "resourceType": "ValueSet",
+  "status": "active",
+  "name": "hvo-organizational-unit-type",
+  "id": "hvo-organizational-unit-type",
+  "title": "Typ av organisatorisk enhet",
+  "description": "Includes types of organizational units. An organizational unit can be categorized in multiple ways depending on the purpose of the categorization.",
+  "url": "http://electronichealth.se/hvo/ValueSet/hvo-organizational-unit-type",
+  "version": "0.1.0",
+  "useContext": [
+    {
+      "code": {
+        "code": "program"
+      },
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "code": "hvo-organization-business",
+            "display": "Organisation och verksamhet"
+          }
+        ]
+      }
+    }
+  ],
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/45991000052106",
+        "concept": [
+          {
+            "code": "43741000",
+            "display": "vårdenhet"
+          }
+        ]
+      }
+    ]
+  }
+}
