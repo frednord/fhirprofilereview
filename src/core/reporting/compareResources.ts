@@ -9,6 +9,12 @@ import { describeChanges } from './describeChanges'
 import { countChanges, type ChangeCounts } from './summarizeChanges'
 import type { ChangeDescription, LabelSet } from './types'
 
+/** Changes on every save, so it hides the changes a reviewer is looking for. */
+export const LAST_UPDATED_PATH = 'meta.lastUpdated'
+
+/** meta.lastUpdated is hidden unless the user asks for it, for the reason above. */
+export const HIDE_LAST_UPDATED_BY_DEFAULT = true
+
 /** What the page says about one input before anything is compared. */
 export type InputStatus =
   | { ok: true; resource: FhirResource; resourceType: string; id: string | undefined }

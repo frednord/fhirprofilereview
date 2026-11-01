@@ -1,5 +1,5 @@
 import type { ChangeKind } from '../../core/diff'
-import { filterByKind, formatShownNote, type Comparison } from '../../core/reporting'
+import { filterByKind, formatHiddenNote, formatShownNote, type Comparison } from '../../core/reporting'
 import { ChangeList } from './ChangeList'
 import { ChangeSummary } from './ChangeSummary'
 import { DiffWarnings } from './DiffWarnings'
@@ -12,13 +12,10 @@ interface ComparisonResultProps {
   onToggleKind: (kind: ChangeKind) => void
 }
 
-function hiddenNote(count: number, path: string): string {
-  return count === 1 ? `1 ändring av ${path} är dold.` : `${count} ändringar av ${path} är dolda.`
-}
-
 export function ComparisonResult({ comparison, hiddenPath, shownKinds, onToggleKind }: ComparisonResultProps) {
   const visible = filterByKind(comparison.descriptions, shownKinds)
   const shownNote = formatShownNote(comparison.counts, shownKinds)
+  const hiddenNote = formatHiddenNote(comparison.hiddenCount, hiddenPath)
   const ig = comparison.diff.ig
 
   return (
@@ -28,7 +25,7 @@ export function ComparisonResult({ comparison, hiddenPath, shownKinds, onToggleK
       <p className="text-sm text-slate-600">
         {comparison.descriptions.length === 0 && 'Resurserna är lika. '}
         {shownNote !== undefined && `${shownNote} `}
-        {comparison.hiddenCount > 0 && `${hiddenNote(comparison.hiddenCount, hiddenPath)} `}
+        {hiddenNote !== undefined && `${hiddenNote} `}
         {ig !== undefined && `Jämfört med etiketter från ${ig.packageId}@${ig.version}.`}
       </p>
       <DiffWarnings warnings={comparison.warnings} />

@@ -104,7 +104,9 @@ Allt körs i webbläsaren; inget skickas till någon server.
   Sidan (`src/pages/ComparePage.tsx`, `src/hooks/useComparison.ts`) ritar bara
   upp resultatet.
 - **`meta.lastUpdated` döljs** från start, eftersom den ändras vid varje
-  sparning. Sidan säger hur många ändringar som doldes.
+  sparning. Sidan säger hur många ändringar som doldes. Sökvägen, standardvalet
+  och texterna (`LAST_UPDATED_PATH`, `formatHiddenNote`, `KIND_LABELS`) ligger i
+  `src/core/reporting`, så att UI:t bara ritar upp dem.
 - **Ogiltig JSON** får rad och kolumn på svenska. Chrome och Node säger inte
   längre var `JSON.parse` stannade, så `src/core/parser/jsonErrorLocation.ts`
   hittar platsen själv.
