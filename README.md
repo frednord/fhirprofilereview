@@ -31,6 +31,13 @@ Se `CLAUDE.md` för arkitekturen. Det viktigaste:
 - **Inmatning är okänd JSON.** `parseResource` kräver bara ett objekt med
   `resourceType`. Resten läses med hjälpfunktionerna i `src/core/parser/narrowing.ts`,
   så att även felaktiga resurser kan jämföras och valideras.
+- **Indata behandlas som fientlig.** Nycklar från användarens JSON slås upp med
+  `getOwn` i `src/core/parser/narrowing.ts`, så att fältnamn som `constructor`
+  eller `toString` inte träffar `Object.prototype`. `parseResource` avvisar JSON
+  som är djupare än `MAX_JSON_DEPTH` (100 nivåer), eftersom diffen och
+  beskrivningarna är rekursiva och annars kan spränga anropsstacken. En
+  `ErrorBoundary` runt sidan visar ett felmeddelande i stället för en tom sida
+  om något ändå kastar. Testerna ligger i `tests/security/`.
 - **IG-versionen är låst.** `src/core/profiles/hvoManifest.ts` anger vilken
   paketversion profiler och testdata kommer från. Versioner som `current`
   räknas inte som låsta och markeras i UI:t.

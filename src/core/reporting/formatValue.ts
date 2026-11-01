@@ -1,5 +1,5 @@
 import type { JsonObject, JsonValue } from '../../types/json'
-import { getArray, getString, isJsonArray, isJsonObject } from '../parser/narrowing'
+import { getArray, getOwn, getString, isJsonArray, isJsonObject } from '../parser/narrowing'
 
 export const CONTACT_POINT_SYSTEM = 'http://hl7.org/fhir/contact-point-system'
 
@@ -9,7 +9,7 @@ type CodeLabels = Readonly<Record<string, string>>
 
 /** Swedish name of a code, or undefined when the label data does not cover it. */
 export function codeLabel(codes: CodeLabels, system: string | undefined, code: string): string | undefined {
-  return system === undefined ? undefined : codes[`${system}|${code}`]
+  return system === undefined ? undefined : getOwn(codes, `${system}|${code}`)
 }
 
 /** Name of a Coding without its code, for use inside a label. */

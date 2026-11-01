@@ -45,3 +45,12 @@ export function getPrimitiveAtPath(value: JsonValue, path: string): string | num
   }
   return undefined
 }
+
+/**
+ * Looks up a key that may come from user input in a plain lookup table.
+ * A bare table[key] would return inherited members such as Object.prototype.constructor
+ * for keys like "constructor" or "toString", which crashes or garbles the caller.
+ */
+export function getOwn<T>(table: Readonly<Record<string, T>>, key: string): T | undefined {
+  return Object.hasOwn(table, key) ? table[key] : undefined
+}
