@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { matchListItems } from '../../src/core/diff/matchListItems'
+import { describeMatchKey, matchListItems } from '../../src/core/diff/matchListItems'
 
 const ORG_NR = 'urn:oid:2.5.4.97'
 const HSA = 'urn:oid:1.2.752.29.4.19'
@@ -88,5 +88,27 @@ describe('matchListItems', () => {
       { beforeIndex: 0, afterIndex: 0, reason: 'key' },
       { beforeIndex: undefined, afterIndex: 1, reason: 'unmatched' },
     ])
+  })
+})
+
+describe('describeMatchKey', () => {
+  const keys = [['system', 'value'], ['system']]
+
+  it('describes a pair by the first key both sides agree on', () => {
+    expect(describeMatchKey(keys, { system: ORG_NR, value: '1' }, { system: ORG_NR, value: '2' })).toEqual({ system: ORG_NR })
+    expect(describeMatchKey(keys, { system: ORG_NR, value: '1' }, { system: ORG_NR, value: '1' })).toEqual({
+      system: ORG_NR,
+      value: '1',
+    })
+  })
+
+  it('describes an added or removed item by the first key it has', () => {
+    expect(describeMatchKey(keys, undefined, { system: HSA, value: 'SE1' })).toEqual({ system: HSA, value: 'SE1' })
+    expect(describeMatchKey(keys, { system: HSA }, undefined)).toEqual({ system: HSA })
+  })
+
+  it('returns undefined when no key applies', () => {
+    expect(describeMatchKey(keys, { value: '1' }, undefined)).toBeUndefined()
+    expect(describeMatchKey([], 'a', 'a')).toBeUndefined()
   })
 })

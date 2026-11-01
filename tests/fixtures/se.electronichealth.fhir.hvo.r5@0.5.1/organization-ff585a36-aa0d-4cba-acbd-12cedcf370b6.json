@@ -1,0 +1,148 @@
+{
+  "resourceType": "Organization",
+  "id": "ff585a36-aa0d-4cba-acbd-12cedcf370b6",
+  "identifier": [
+    {
+      "system": "urn:oid:1.2.752.29.4.19",
+      "value": "SE2321000040-E000030201122"
+    }
+  ],
+  "extension": [
+    {
+      "url": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganizationActiveStatusExtension",
+      "valueBoolean": true
+    },
+    {
+      "valuePeriod": {
+        "start": "1970-01-01"
+      },
+      "url": "http://hl7.org/fhir/StructureDefinition/organization-period"
+    }
+  ],
+  "partOf": {
+    "reference": "urn:uuid:2b215323-5606-4dc0-bdfb-961654e394f7"
+  },
+  "contained": [
+    {
+      "resourceType": "HealthcareService",
+      "id": "OrganizationTransactionBusiness1",
+      "providedBy": {
+        "reference": "#"
+      },
+      "category": [
+        {
+          "coding": [
+            {
+              "code": "1116",
+              "system": "urn:oid:1.2.752.129.2.2.1.3"
+            }
+          ]
+        },
+        {
+          "coding": [
+            {
+              "code": "1140",
+              "system": "urn:oid:1.2.752.129.2.2.1.3"
+            }
+          ]
+        }
+      ],
+      "location": [
+        {
+          "reference": "Location/MunicipalityLocation1"
+        },
+        {
+          "reference": "Location/CountyLocation1"
+        },
+        {
+          "reference": "Location/c72074d1-788c-409c-a15c-0d300bce1343"
+        }
+      ]
+    }
+  ],
+  "contact": [
+    {
+      "purpose": {
+        "coding": [
+          {
+            "code": "CATADMIN",
+            "system": "http://electronichealth.se/CodeSystem/fhir/hvo-extended-contact-entity-type"
+          }
+        ]
+      },
+      "telecom": [
+        {
+          "system": "email",
+          "value": "admin.lcs@linkoping.com"
+        }
+      ]
+    },
+    {
+      "purpose": {
+        "coding": [
+          {
+            "code": "ADMIN",
+            "system": "http://terminology.hl7.org/CodeSystem/contactentity-type"
+          }
+        ]
+      },
+      "address": {
+        "line": [
+          "Linköpings centralsjukhus",
+          "Verksamhet medicin och akutsjukvård",
+          "589 57",
+          "Linköping"
+        ]
+      }
+    },
+    {
+      "purpose": {
+        "coding": [
+          {
+            "code": "PROF",
+            "system": "http://electronichealth.se/CodeSystem/fhir/hvo-extended-contact-entity-type"
+          }
+        ]
+      },
+      "telecom": [
+        {
+          "system": "phone",
+          "value": "+46185566489"
+        }
+      ]
+    },
+    {
+      "purpose": {
+        "coding": [
+          {
+            "code": "PROF",
+            "system": "http://electronichealth.se/CodeSystem/fhir/hvo-extended-contact-entity-type"
+          }
+        ]
+      },
+      "telecom": [
+        {
+          "system": "fax",
+          "value": "+4622884738"
+        }
+      ]
+    },
+    {
+      "purpose": {
+        "coding": [
+          {
+            "code": "PATINF",
+            "system": "http://electronichealth.se/CodeSystem/fhir/hvo-extended-contact-entity-type"
+          }
+        ]
+      },
+      "telecom": [
+        {
+          "system": "url",
+          "value": "https://www.1177.se/Hitta-vard/Kontakt/?hsaid=SE2321000040-E000030201122"
+        }
+      ]
+    }
+  ],
+  "name": "Avdelning Kardiologi"
+}

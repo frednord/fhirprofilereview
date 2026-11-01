@@ -1,0 +1,42 @@
+{
+  "resourceType": "Location",
+  "id": "253e11a2-4f15-41a6-abc9-59cc80867540",
+  "identifier": [
+    {
+      "system": "https://electronichealth.se/identifier/locationAddressLm",
+      "value": "28eff07b-be35-4cde-ac85-85476a2b8eee"
+    }
+  ],
+  "extension": [
+    {
+      "extension": [
+        {
+          "url": "latitude",
+          "valueDecimal": 6473581
+        },
+        {
+          "url": "longitude",
+          "valueDecimal": 536250
+        }
+      ],
+      "url": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOSweref99PositionExtension"
+    }
+  ],
+  "address": {
+    "line": [
+      "Tussmötevägen",
+      "181"
+    ],
+    "extension": [
+      {
+        "url": "http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-precinct",
+        "valueString": "Stureby"
+      }
+    ],
+    "type": "physical",
+    "postalCode": "12264",
+    "city": "Enskede",
+    "district": "Stockholm"
+  },
+  "status": "active"
+}

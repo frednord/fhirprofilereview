@@ -1,5 +1,6 @@
 import type { JsonValue } from '../../types/json'
 import { getPrimitiveAtPath } from '../parser/narrowing'
+import { jsonEqual } from './jsonEqual'
 import { DEFAULT_LIST_MATCH_KEYS, type ListMatchKeyConfig, type MatchKey } from './listMatchKeys'
 
 export type MatchReason = 'key' | 'equal' | 'position' | 'unmatched'
@@ -26,8 +27,39 @@ function keyValue(item: JsonValue, key: MatchKey): string | undefined {
   return parts.join('\u0000')
 }
 
-function isDeepEqual(a: JsonValue, b: JsonValue): boolean {
-  return JSON.stringify(a) === JSON.stringify(b)
+function readKey(item: JsonValue, key: MatchKey): Record<string, string> | undefined {
+  const record: Record<string, string> = {}
+  for (const path of key) {
+    const value = getPrimitiveAtPath(item, path)
+    if (value === undefined) return undefined
+    record[path] = String(value)
+  }
+  return record
+}
+
+/**
+ * Describes which key identifies a list item, for display. For a matched pair
+ * this is the first key both sides agree on (so an identifier whose value
+ * changed is described by its system, not by its new value); for an added or
+ * removed item it is the first key the item has.
+ */
+export function describeMatchKey(
+  keys: readonly MatchKey[],
+  before: JsonValue | undefined,
+  after: JsonValue | undefined,
+): Record<string, string> | undefined {
+  for (const key of keys) {
+    const beforeKey = before === undefined ? undefined : readKey(before, key)
+    const afterKey = after === undefined ? undefined : readKey(after, key)
+    if (before !== undefined && after !== undefined) {
+      if (beforeKey !== undefined && afterKey !== undefined && keyValue(before, key) === keyValue(after, key)) {
+        return afterKey
+      }
+    } else if (beforeKey ?? afterKey) {
+      return beforeKey ?? afterKey
+    }
+  }
+  return undefined
 }
 
 /** Removes and returns the first item matching the predicate, preserving order of the rest. */
@@ -53,7 +85,7 @@ function matchByKeys(before: Indexed[], after: Indexed[], keys: readonly MatchKe
 
 function matchByEquality(before: Indexed[], after: Indexed[], pairs: ListItemPair[]): void {
   for (const item of [...before]) {
-    const partner = takeFirst(after, (candidate) => isDeepEqual(candidate.value, item.value))
+    const partner = takeFirst(after, (candidate) => jsonEqual(candidate.value, item.value))
     if (partner === undefined) continue
     takeFirst(before, (candidate) => candidate.index === item.index)
     pairs.push({ beforeIndex: item.index, afterIndex: partner.index, reason: 'equal' })
@@ -100,7 +132,15 @@ export function matchListItems(
   after: readonly JsonValue[],
   config: ListMatchKeyConfig = DEFAULT_LIST_MATCH_KEYS,
 ): ListItemPair[] {
-  const keys = config[elementName] ?? []
+  return matchListItemsByKeys(config[elementName] ?? [], before, after)
+}
+
+/** Same as matchListItems, with the keys already resolved by the caller. */
+export function matchListItemsByKeys(
+  keys: readonly MatchKey[],
+  before: readonly JsonValue[],
+  after: readonly JsonValue[],
+): ListItemPair[] {
   const remainingBefore: Indexed[] = before.map((value, index) => ({ index, value }))
   const remainingAfter: Indexed[] = after.map((value, index) => ({ index, value }))
   const pairs: ListItemPair[] = []

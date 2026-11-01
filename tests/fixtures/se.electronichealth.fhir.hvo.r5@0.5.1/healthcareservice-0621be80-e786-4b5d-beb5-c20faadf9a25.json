@@ -1,0 +1,83 @@
+{
+  "resourceType": "HealthcareService",
+  "id": "0621be80-e786-4b5d-beb5-c20faadf9a25",
+  "type": [
+    {
+      "coding": [
+        {
+          "code": "72191000052102",
+          "system": "http://snomed.info/sct",
+          "version": "http://snomed.info/sct/45991000052106/version/20251130",
+          "display": "konsultation avseende barn- och ungdomshematologi och onkologi"
+        }
+      ]
+    }
+  ],
+  "characteristic": [
+    {
+      "coding": [
+        {
+          "code": "in-person",
+          "system": "http://hl7.org/fhir/service-mode"
+        }
+      ]
+    }
+  ],
+  "extension": [
+    {
+      "valuePeriod": {
+        "start": "2026-02-25T05:00:00+00:00"
+      },
+      "url": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOHealthcareServicePeriodExtension"
+    }
+  ],
+  "eligibility": [
+    {
+      "extension": [
+        {
+          "valueReference": {
+            "reference": "#g1"
+          },
+          "url": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOEligibilityValueExtension"
+        }
+      ],
+      "comment": "Barn och ungdomar under 18 år"
+    }
+  ],
+  "location": [
+    {
+      "reference": "Location/c72074d1-788c-409c-a15c-0d300bce1343"
+    }
+  ],
+  "contained": [
+    {
+      "resourceType": "Group",
+      "id": "g1",
+      "characteristic": [
+        {
+          "valueRange": {
+            "high": {
+              "value": 17
+            }
+          },
+          "exclude": false,
+          "code": {
+            "coding": [
+              {
+                "code": "424144002",
+                "system": "http://snomed.info/sct",
+                "version": "http://snomed.info/sct/45991000052106",
+                "display": "aktuell kronologisk ålder"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "person",
+      "membership": "definitional"
+    }
+  ],
+  "providedBy": {
+    "reference": "Organization/OrganizationalUnitInstance1"
+  }
+}
