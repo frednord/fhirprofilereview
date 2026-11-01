@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import type { ChangeKind } from '../../src/core/diff'
-import { countChanges, filterByKind, formatCounts, formatShownNote, type ChangeDescription } from '../../src/core/reporting'
+import {
+  countChanges,
+  filterByKind,
+  formatCounts,
+  formatHiddenNote,
+  formatShownNote,
+  KIND_FILTER_LABELS,
+  KIND_LABELS,
+  type ChangeDescription,
+} from '../../src/core/reporting'
 
 function description(kind: ChangeKind, text: string): ChangeDescription {
   return { change: { kind, path: [], elementPath: 'Organization' }, profiles: [], label: text, text, source: 'rule' }
@@ -41,5 +50,16 @@ describe('summarizeChanges', () => {
     expect(formatShownNote({ added: 1, removed: 0, changed: 0 }, new Set<ChangeKind>())).toBe('Visar 0 av 1 ändring.')
     // Hiding a kind with no changes hides nothing.
     expect(formatShownNote({ added: 0, removed: 1, changed: 0 }, new Set<ChangeKind>(['removed']))).toBeUndefined()
+  })
+
+  it('notes how many changes the ignored path hid', () => {
+    expect(formatHiddenNote(0, 'meta.lastUpdated')).toBeUndefined()
+    expect(formatHiddenNote(1, 'meta.lastUpdated')).toBe('1 ändring av meta.lastUpdated är dold.')
+    expect(formatHiddenNote(3, 'meta.lastUpdated')).toBe('3 ändringar av meta.lastUpdated är dolda.')
+  })
+
+  it('names the kinds in the same words as the counts', () => {
+    expect(KIND_LABELS).toEqual({ added: 'Tillagd', removed: 'Borttagen', changed: 'Ändrad' })
+    expect(KIND_FILTER_LABELS).toEqual({ added: 'Tillagda', removed: 'Borttagna', changed: 'Ändrade' })
   })
 })

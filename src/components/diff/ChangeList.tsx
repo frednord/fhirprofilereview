@@ -1,6 +1,6 @@
 import { formatPath } from '../../core/diff'
-import type { ChangeDescription } from '../../core/reporting'
-import { KIND_BADGE_CLASSES, KIND_LABELS } from './kindStyles'
+import { KIND_LABELS, type ChangeDescription } from '../../core/reporting'
+import { KIND_BADGE_CLASSES } from './kindStyles'
 
 interface ChangeListProps {
   descriptions: readonly ChangeDescription[]

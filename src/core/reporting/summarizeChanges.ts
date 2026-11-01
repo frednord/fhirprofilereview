@@ -26,6 +26,24 @@ const KIND_WORDS: Readonly<Record<ChangeKind, readonly [singular: string, plural
   changed: ['ändrad', 'ändrade'],
 }
 
+function capitalize(word: string): string {
+  return word.charAt(0).toUpperCase() + word.slice(1)
+}
+
+/** Badge text for one change, e.g. "Tillagd". */
+export const KIND_LABELS: Readonly<Record<ChangeKind, string>> = {
+  added: capitalize(KIND_WORDS.added[0]),
+  removed: capitalize(KIND_WORDS.removed[0]),
+  changed: capitalize(KIND_WORDS.changed[0]),
+}
+
+/** Plural labels for the filter, which picks whole groups of changes, e.g. "Tillagda". */
+export const KIND_FILTER_LABELS: Readonly<Record<ChangeKind, string>> = {
+  added: capitalize(KIND_WORDS.added[1]),
+  removed: capitalize(KIND_WORDS.removed[1]),
+  changed: capitalize(KIND_WORDS.changed[1]),
+}
+
 /** "1 tillagd", "3 ändrade". */
 export function formatKindCount(kind: ChangeKind, count: number): string {
   const [singular, plural] = KIND_WORDS[kind]
@@ -58,4 +76,13 @@ export function formatShownNote(counts: ChangeCounts, kinds: ReadonlySet<ChangeK
   const shown = sumCounts(counts, kinds)
   if (shown === total) return undefined
   return `Visar ${shown} av ${total} ${total === 1 ? 'ändring' : 'ändringar'}.`
+}
+
+/**
+ * "2 ändringar av meta.lastUpdated är dolda." when ignorePaths hid something,
+ * so the user knows the list is not the whole diff. Undefined when nothing was hidden.
+ */
+export function formatHiddenNote(count: number, path: string): string | undefined {
+  if (count <= 0) return undefined
+  return count === 1 ? `1 ändring av ${path} är dold.` : `${count} ändringar av ${path} är dolda.`
 }

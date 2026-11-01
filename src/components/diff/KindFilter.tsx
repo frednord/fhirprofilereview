@@ -1,6 +1,5 @@
 import type { ChangeKind } from '../../core/diff'
-import { CHANGE_KINDS, type ChangeCounts } from '../../core/reporting'
-import { KIND_FILTER_LABELS } from './kindStyles'
+import { CHANGE_KINDS, KIND_FILTER_LABELS, type ChangeCounts } from '../../core/reporting'
 
 interface KindFilterProps {
   counts: ChangeCounts

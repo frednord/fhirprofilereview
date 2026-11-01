@@ -2,10 +2,15 @@ import { useMemo, useState } from 'react'
 import { HVO_LABELS } from '../core/profiles/hvo/0.5.1'
 import { HVO_IG_MANIFEST } from '../core/profiles/hvoManifest'
 import type { ChangeKind } from '../core/diff'
-import { CHANGE_KINDS, compareResources, inspectInput, type CompareOutcome, type InputStatus } from '../core/reporting'
-
-/** Changes on every save, so it hides the changes a reviewer is looking for. */
-export const LAST_UPDATED_PATH = 'meta.lastUpdated'
+import {
+  CHANGE_KINDS,
+  compareResources,
+  HIDE_LAST_UPDATED_BY_DEFAULT,
+  inspectInput,
+  LAST_UPDATED_PATH,
+  type CompareOutcome,
+  type InputStatus,
+} from '../core/reporting'
 
 interface Snapshot {
   before: string
@@ -41,7 +46,7 @@ export interface ComparisonState {
 export function useComparison(): ComparisonState {
   const [beforeText, setBeforeText] = useState('')
   const [afterText, setAfterText] = useState('')
-  const [hideLastUpdated, setHideLastUpdated] = useState(true)
+  const [hideLastUpdated, setHideLastUpdated] = useState(HIDE_LAST_UPDATED_BY_DEFAULT)
   const [snapshot, setSnapshot] = useState<Snapshot | undefined>(undefined)
   const [shownKinds, setShownKinds] = useState<ReadonlySet<ChangeKind>>(() => new Set(CHANGE_KINDS))
 
