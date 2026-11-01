@@ -60,6 +60,11 @@ export function ComparePage() {
           {state.stale && (
             <p className="text-sm text-amber-800">Resurserna har ändrats sedan jämförelsen. Klicka på Jämför igen.</p>
           )}
+          {outcome?.ok === false && outcome.reason === 'internal-error' && (
+            <p role="alert" className="text-sm text-red-700">
+              {outcome.message}
+            </p>
+          )}
           {outcome?.ok === true && (
             <ComparisonResult
               comparison={outcome.comparison}
