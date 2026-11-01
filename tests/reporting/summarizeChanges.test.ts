@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { ChangeKind } from '../../src/core/diff'
-import { countChanges, filterByKind, formatCounts, type ChangeDescription } from '../../src/core/reporting'
+import { countChanges, filterByKind, formatCounts, formatShownNote, type ChangeDescription } from '../../src/core/reporting'
 
 function description(kind: ChangeKind, text: string): ChangeDescription {
   return { change: { kind, path: [], elementPath: 'Organization' }, profiles: [], label: text, text, source: 'rule' }
@@ -25,5 +25,21 @@ describe('summarizeChanges', () => {
 
   it('filters by kind and keeps the order', () => {
     expect(filterByKind(DESCRIPTIONS, new Set<ChangeKind>(['changed', 'removed'])).map((d) => d.text)).toEqual(['a', 'c', 'd'])
+  })
+
+  it('limits the counts to the chosen kinds', () => {
+    const counts = { added: 1, removed: 2, changed: 0 }
+    expect(formatCounts(counts, new Set<ChangeKind>(['added', 'changed']))).toBe('1 tillagd, 0 ändrade')
+    expect(formatCounts(counts, new Set<ChangeKind>())).toBe('Inga ändringstyper valda')
+    expect(formatCounts({ added: 0, removed: 0, changed: 0 }, new Set<ChangeKind>())).toBe('Inga skillnader')
+  })
+
+  it('notes how many changes the choice shows', () => {
+    const counts = { added: 1, removed: 2, changed: 2 }
+    expect(formatShownNote(counts, new Set<ChangeKind>(['added', 'removed', 'changed']))).toBeUndefined()
+    expect(formatShownNote(counts, new Set<ChangeKind>(['removed']))).toBe('Visar 2 av 5 ändringar.')
+    expect(formatShownNote({ added: 1, removed: 0, changed: 0 }, new Set<ChangeKind>())).toBe('Visar 0 av 1 ändring.')
+    // Hiding a kind with no changes hides nothing.
+    expect(formatShownNote({ added: 0, removed: 1, changed: 0 }, new Set<ChangeKind>(['removed']))).toBeUndefined()
   })
 })

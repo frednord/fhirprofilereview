@@ -60,7 +60,12 @@ export function ComparePage() {
             <p className="text-sm text-amber-800">Resurserna har ändrats sedan jämförelsen. Klicka på Jämför igen.</p>
           )}
           {outcome?.ok === true && (
-            <ComparisonResult key={state.runId} comparison={outcome.comparison} hiddenPath={LAST_UPDATED_PATH} />
+            <ComparisonResult
+              comparison={outcome.comparison}
+              hiddenPath={LAST_UPDATED_PATH}
+              shownKinds={state.shownKinds}
+              onToggleKind={state.toggleKind}
+            />
           )}
         </section>
       </main>

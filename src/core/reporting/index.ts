@@ -9,5 +9,5 @@ export {
 } from './compareResources'
 export { describeChange, describeChanges, selectProfiles } from './describeChanges'
 export { formatValue } from './formatValue'
-export { CHANGE_KINDS, countChanges, filterByKind, formatCounts, formatKindCount, type ChangeCounts } from './summarizeChanges'
+export { CHANGE_KINDS, countChanges, filterByKind, formatCounts, formatKindCount, formatShownNote, type ChangeCounts } from './summarizeChanges'
 export type { ChangeDescription, DescriptionSource, ItemCondition, LabelSet, ProfileLabels, SliceLabel } from './types'

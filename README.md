@@ -108,6 +108,10 @@ Allt körs i webbläsaren; inget skickas till någon server.
 - **Ogiltig JSON** får rad och kolumn på svenska. Chrome och Node säger inte
   längre var `JSON.parse` stannade, så `src/core/parser/jsonErrorLocation.ts`
   hittar platsen själv.
+- **Kryssrutorna Tillagda, Borttagna och Ändrade** väljer vilka ändringstyper
+  som visas i rubriken och listan. Alla är ikryssade från början, och valet
+  ligger kvar mellan jämförelser. När valet döljer ändringar står det t.ex.
+  "Visar 3 av 5 ändringar".
 - **Jämförelsen körs bara vid klick**, så resultatet hoppar inte medan man
   skriver. Ändras en text efteråt visas en påminnelse.
 - Ändringar utan svensk etikett märks "saknar svensk etikett", så att luckor i
