@@ -5,7 +5,7 @@ import type { IgManifest } from './igManifest'
  *
  * The guide published as "current" on Simplifier (OrganizationContractOffering
  * 0.5.0) is built on package version 0.5.1, which is the version pinned here.
- * Profile names follow the IG; in this version the Location profile has no HVO prefix.
+ * Profile names follow the StructureDefinition names in the package.
  */
 export const HVO_IG_MANIFEST: IgManifest = {
   title: 'Swedish Provider Directory (HVO)',
@@ -18,6 +18,6 @@ export const HVO_IG_MANIFEST: IgManifest = {
     { name: 'HVOOrganization' },
     { name: 'HVOOrganizationalUnit' },
     { name: 'HVOBusiness' },
-    { name: 'Location' },
+    { name: 'HVOLocation' },
   ],
 }

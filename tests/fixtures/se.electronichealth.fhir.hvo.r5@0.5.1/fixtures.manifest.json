@@ -47,6 +47,54 @@
       "packagePath": "package/examples/organization-ff585a36-aa0d-4cba-acbd-12cedcf370b6.json",
       "packageFileId": 3912190,
       "sha256": "cacb80be5b0e8f9db1019d9f9638e90a17a6a2f4cb3eaae4ede8904d058c1f77"
+    },
+    {
+      "file": "structuredefinition-hvobusiness.json",
+      "packagePath": "package/structuredefinition-hvobusiness.json",
+      "packageFileId": 3912296,
+      "sha256": "d45a14fee943d08f9090569413df7e6dbe5f95799c71853a231d71587fe39642"
+    },
+    {
+      "file": "structuredefinition-hvolocation.json",
+      "packagePath": "package/structuredefinition-hvolocation.json",
+      "packageFileId": 3912304,
+      "sha256": "bbb0c46015a1c36b8b9a7c202c368705af23f4c360403190f4d5b04e37011775"
+    },
+    {
+      "file": "structuredefinition-hvoorganization.json",
+      "packagePath": "package/structuredefinition-hvoorganization.json",
+      "packageFileId": 3912312,
+      "sha256": "de77a0eb27fb87d1c07da12ac265edeac6112056db708aa53421a040a3edadfd"
+    },
+    {
+      "file": "structuredefinition-hvoorganizationalunit.json",
+      "packagePath": "package/structuredefinition-hvoorganizationalunit.json",
+      "packageFileId": 3912316,
+      "sha256": "c947393ce4fd3fc25bcc22d24b04ce29048986c76fbc7fc274b81eeb9da22276"
+    },
+    {
+      "file": "valueset-hvo-contact-purpose.json",
+      "packagePath": "package/valueset-hvo-contact-purpose.json",
+      "packageFileId": 3912343,
+      "sha256": "240ddb9427df4e8dad260c71ca4f75c0b140e6f04d558c83cd9c36e3230e846e"
+    },
+    {
+      "file": "valueset-hvo-counties-scb.json",
+      "packagePath": "package/valueset-hvo-counties-scb.json",
+      "packageFileId": 3912348,
+      "sha256": "e3c07f072c9e14d84d6c9e032c211c9c668a5cacf35c2344526adc3e21ee72d8"
+    },
+    {
+      "file": "valueset-hvo-organization-type.json",
+      "packagePath": "package/valueset-hvo-organization-type.json",
+      "packageFileId": 3912361,
+      "sha256": "35106357501b804b22006d6bd2fa100ff8d92f1cde6a12ba1d21585a499617ce"
+    },
+    {
+      "file": "valueset-hvo-organizational-unit-type.json",
+      "packagePath": "package/valueset-hvo-organizational-unit-type.json",
+      "packageFileId": 3912359,
+      "sha256": "10e395de8e314fcb69bc94553853d459117f48974a04ac00339264592180bd79"
     }
   ]
 }

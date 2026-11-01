@@ -1,0 +1,68 @@
+{
+  "resourceType": "ValueSet",
+  "status": "active",
+  "name": "hvo-contact-purpose",
+  "id": "hvo-contact-purpose",
+  "title": "Syfte för kontaktuppgift",
+  "description": "Includes purposes for which a contact detail can be contacted.",
+  "url": "http://electronichealth.se/hvo/ValueSet/hvo-contact-purpose",
+  "version": "0.1.0",
+  "useContext": [
+    {
+      "code": {
+        "code": "program"
+      },
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "code": "hvo-organization-business",
+            "display": "Organisation och verksamhet"
+          }
+        ]
+      }
+    },
+    {
+      "code": {
+        "code": "program"
+      },
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "code": "hvo-offerings",
+            "display": "Utbud"
+          }
+        ]
+      }
+    }
+  ],
+  "compose": {
+    "include": [
+      {
+        "system": "http://electronichealth.se/CodeSystem/fhir/hvo-extended-contact-entity-type",
+        "concept": [
+          {
+            "code": "CATADMIN",
+            "display": "Katalogadministratör"
+          },
+          {
+            "code": "PROF",
+            "display": "Professionell"
+          }
+        ]
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/contactentity-type",
+        "concept": [
+          {
+            "code": "PATINF",
+            "display": "Patient"
+          },
+          {
+            "code": "ADMIN",
+            "display": "Administrativt"
+          }
+        ]
+      }
+    ]
+  }
+}

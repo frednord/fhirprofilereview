@@ -1,0 +1,1168 @@
+{
+  "resourceType": "StructureDefinition",
+  "id": "HVOOrganization",
+  "url": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+  "version": "0.1.0",
+  "name": "HVOOrganization",
+  "status": "active",
+  "description": "HVOOrganization holds information about corporations and sole traders.",
+  "fhirVersion": "5.0.0",
+  "mapping": [
+    {
+      "identity": "HVOOrganizationToHVOOrganisationLogical",
+      "uri": "HVOOrganisationLogical"
+    }
+  ],
+  "kind": "resource",
+  "abstract": false,
+  "type": "Organization",
+  "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Organization",
+  "derivation": "constraint",
+  "differential": {
+    "element": [
+      {
+        "id": "Organization.id",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          },
+          {
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-writer-actor-hvo"
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation"
+          }
+        ],
+        "path": "Organization.id",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension",
+        "path": "Organization.extension",
+        "slicing": {
+          "discriminator": [
+            {
+              "type": "value",
+              "path": "url"
+            }
+          ],
+          "ordered": false,
+          "rules": "open"
+        },
+        "min": 1
+      },
+      {
+        "id": "Organization.extension:organizationActive",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.extension",
+        "sliceName": "organizationActive",
+        "min": 1,
+        "max": "1",
+        "type": [
+          {
+            "code": "Extension",
+            "profile": [
+              "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganizationActiveStatusExtension"
+            ]
+          }
+        ],
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:organizationActive.url",
+        "path": "Organization.extension.url",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:organizationActive.value[x]",
+        "path": "Organization.extension.value[x]",
+        "short": "The status which the organization is registered with in SCB:s Business Register (sv: Företagsregister), where true implies 'active' and false implies 'inactive'.",
+        "min": 1,
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOOrganizationToHVOOrganisationLogical",
+            "map": "status"
+          }
+        ]
+      },
+      {
+        "id": "Organization.extension:legalForm",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.extension",
+        "sliceName": "legalForm",
+        "short": "Extension for legal form of an organization.",
+        "min": 0,
+        "max": "1",
+        "type": [
+          {
+            "code": "Extension",
+            "profile": [
+              "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganizationLegalFormExtension"
+            ]
+          }
+        ],
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOOrganizationToHVOOrganisationLogical",
+            "map": "juridiskForm"
+          }
+        ]
+      },
+      {
+        "id": "Organization.extension:legalForm.url",
+        "path": "Organization.extension.url",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:legalForm.value[x]",
+        "path": "Organization.extension.value[x]",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:legalForm.value[x].system",
+        "path": "Organization.extension.value[x].system",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:legalForm.value[x].code",
+        "path": "Organization.extension.value[x].code",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:ownershipType",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.extension",
+        "sliceName": "ownershipType",
+        "min": 0,
+        "max": "1",
+        "type": [
+          {
+            "code": "Extension",
+            "profile": [
+              "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganizationOwnershipExtension"
+            ]
+          }
+        ],
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOOrganizationToHVOOrganisationLogical",
+            "map": "agarkategori"
+          }
+        ]
+      },
+      {
+        "id": "Organization.extension:ownershipType.url",
+        "path": "Organization.extension.url",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:ownershipType.value[x]",
+        "path": "Organization.extension.value[x]",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:ownershipType.value[x].system",
+        "path": "Organization.extension.value[x].system",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:ownershipType.value[x].code",
+        "path": "Organization.extension.value[x].code",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:period",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.extension",
+        "sliceName": "period",
+        "min": 0,
+        "max": "1",
+        "type": [
+          {
+            "code": "Extension",
+            "profile": [
+              "http://hl7.org/fhir/StructureDefinition/organization-period"
+            ]
+          }
+        ],
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:period.url",
+        "path": "Organization.extension.url",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:period.value[x]",
+        "path": "Organization.extension.value[x]",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:period.value[x].start",
+        "path": "Organization.extension.value[x].start",
+        "min": 1,
+        "constraint": [
+          {
+            "key": "hvo-dateTime-2",
+            "human": "DateTime should be submitted without timestamp",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "$this.toString().contains('T') = false"
+          }
+        ],
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOOrganizationToHVOOrganisationLogical",
+            "map": "giltigFrom"
+          }
+        ]
+      },
+      {
+        "id": "Organization.extension:period.value[x].end",
+        "path": "Organization.extension.value[x].end",
+        "constraint": [
+          {
+            "key": "hvo-dateTime-2",
+            "human": "DateTime should be submitted without timestamp",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "$this.toString().contains('T') = false"
+          }
+        ],
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOOrganizationToHVOOrganisationLogical",
+            "map": "giltigTom"
+          }
+        ]
+      },
+      {
+        "id": "Organization.extension:additionalRelationship",
+        "path": "Organization.extension",
+        "sliceName": "additionalRelationship",
+        "min": 0,
+        "max": "*",
+        "type": [
+          {
+            "code": "Extension",
+            "profile": [
+              "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganizationAdditionalRelationshipExtension"
+            ]
+          }
+        ],
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOOrganizationToHVOOrganisationLogical",
+            "map": "relationOrganisation(HVOOrganisationLogical)"
+          }
+        ]
+      },
+      {
+        "id": "Organization.extension:additionalRelationship.extension:additionalRelationship",
+        "path": "Organization.extension.extension",
+        "sliceName": "additionalRelationship",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:additionalRelationship.extension:additionalRelationship.url",
+        "path": "Organization.extension.extension.url",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:additionalRelationship.extension:additionalRelationship.value[x]",
+        "path": "Organization.extension.extension.value[x]",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:additionalRelationship.extension:type",
+        "path": "Organization.extension.extension",
+        "sliceName": "type",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:additionalRelationship.extension:type.url",
+        "path": "Organization.extension.extension.url",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:additionalRelationship.extension:type.value[x]",
+        "path": "Organization.extension.extension.value[x]",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:additionalRelationship.extension:type.value[x].system",
+        "path": "Organization.extension.extension.value[x].system",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.extension:additionalRelationship.extension:type.value[x].code",
+        "path": "Organization.extension.extension.value[x].code",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.identifier",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.identifier",
+        "slicing": {
+          "discriminator": [
+            {
+              "type": "value",
+              "path": "system"
+            }
+          ],
+          "rules": "open",
+          "ordered": false,
+          "description": "Slice identifier to express different kinds of identifiers"
+        },
+        "short": "The organization should contain at least an organization number if legal form is corporation or a personal identity number if legal form is sole trader. Can contain additional identifiers used in a national or local context.",
+        "min": 1,
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOOrganizationToHVOOrganisationLogical",
+            "map": "id"
+          }
+        ]
+      },
+      {
+        "id": "Organization.identifier:hsaid",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-writer-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.identifier",
+        "sliceName": "hsaid",
+        "min": 0,
+        "max": "*",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.identifier:hsaid.system",
+        "path": "Organization.identifier.system",
+        "min": 1,
+        "patternUri": "urn:oid:1.2.752.29.4.19",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.identifier:hsaid.value",
+        "path": "Organization.identifier.value",
+        "min": 1,
+        "constraint": [
+          {
+            "key": "hvo-organization-hsa-identifier-value-1",
+            "human": "If identifier.system = urn:oid:1.2.752.29.4.19, value should have max length of 31 characters",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "$this.length() <= 31"
+          },
+          {
+            "key": "hvo-organization-hsa-identifier-value-2",
+            "human": "If identifier.system = urn:oid:1.2.752.29.4.19, value should follow format for HSA ID: SE1234567890-ABC1. Characters å, ä, ö, @ not valid.",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "$this.matches('^SE[0-9]{10}-[A-za-z0-9]+$')"
+          }
+        ],
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.identifier:organizationIdentifier",
+        "path": "Organization.identifier",
+        "sliceName": "organizationIdentifier",
+        "min": 0,
+        "max": "1",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.identifier:organizationIdentifier.system",
+        "path": "Organization.identifier.system",
+        "min": 1,
+        "patternUri": "urn:oid:2.5.4.97",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.identifier:organizationIdentifier.value",
+        "path": "Organization.identifier.value",
+        "min": 1,
+        "constraint": [
+          {
+            "key": "hvo-organization-identifier-value-1",
+            "human": "If identifier.system = urn:oid:2.5.4.97, value should follow format for organization identifier (sv: organisationsnummer): 1234567890",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "$this.matches('^[0-9]{10}$')"
+          }
+        ],
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.identifier:personalIdentityNumber",
+        "path": "Organization.identifier",
+        "sliceName": "personalIdentityNumber",
+        "min": 0,
+        "max": "1",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.identifier:personalIdentityNumber.system",
+        "path": "Organization.identifier.system",
+        "min": 1,
+        "patternUri": "http://electronichealth.se/identifier/personnummer",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.identifier:personalIdentityNumber.value",
+        "path": "Organization.identifier.value",
+        "min": 1,
+        "constraint": [
+          {
+            "key": "hvo-personal-identity-number-value-1",
+            "human": "A personal identity number should follow format 198001032385",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "$this.matches('^([0-9]([0-9]([0-9][1-9]|[1-9]0)|[1-9]00)|[1-9]000)(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])\\\\d{4}$')"
+          }
+        ],
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.type",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.type",
+        "slicing": {
+          "discriminator": [
+            {
+              "type": "value",
+              "path": "coding"
+            }
+          ],
+          "rules": "open",
+          "ordered": false,
+          "description": "Slice on CodeableConcept based on the coding"
+        },
+        "mustSupport": true,
+        "binding": {
+          "strength": "required",
+          "valueSet": "http://electronichealth.se/hvo/ValueSet/hvo-organization-type"
+        },
+        "mapping": [
+          {
+            "identity": "HVOOrganizationToHVOOrganisationLogical",
+            "map": "typ"
+          }
+        ]
+      },
+      {
+        "id": "Organization.type.coding",
+        "path": "Organization.type.coding",
+        "min": 1,
+        "max": "1",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.type.coding.system",
+        "path": "Organization.type.coding.system",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.type.coding.version",
+        "path": "Organization.type.coding.version",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.type.coding.code",
+        "path": "Organization.type.coding.code",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.type:careProvider",
+        "path": "Organization.type",
+        "sliceName": "careProvider",
+        "min": 0,
+        "max": "1",
+        "mustSupport": true,
+        "binding": {
+          "strength": "required",
+          "valueSet": "http://electronichealth.se/hvo/ValueSet/hvo-organization-type"
+        }
+      },
+      {
+        "id": "Organization.type:careProvider.coding",
+        "path": "Organization.type.coding",
+        "min": 1,
+        "max": "1",
+        "patternCoding": {
+          "code": "143591000052106",
+          "system": "http://snomed.info/sct",
+          "version": "http://snomed.info/sct/45991000052106"
+        },
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.type:careProvider.coding.system",
+        "path": "Organization.type.coding.system",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.type:careProvider.coding.version",
+        "path": "Organization.type.coding.version",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.type:careProvider.coding.code",
+        "path": "Organization.type.coding.code",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.name",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.name",
+        "short": "Name of the organization according to Bolagsverket, Skatteverket or SCB.",
+        "min": 1,
+        "constraint": [
+          {
+            "key": "hvo-organization-name-1",
+            "human": "Name of Organization should have max length of 200 characters",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "$this.length() <= 200"
+          }
+        ],
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOOrganizationToHVOOrganisationLogical",
+            "map": "namn"
+          }
+        ]
+      },
+      {
+        "id": "Organization.alias",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.alias",
+        "short": "A name of the organization that is commonly used and is not the official name, e.g. an abbreviation of the official name.",
+        "constraint": [
+          {
+            "key": "hvo-organization-alias-1",
+            "human": "Alias of Organization should have max length of 200 characters",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "$this.length() <= 200"
+          }
+        ],
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOOrganizationToHVOOrganisationLogical",
+            "map": "alias"
+          }
+        ]
+      },
+      {
+        "id": "Organization.contact",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.contact",
+        "slicing": {
+          "discriminator": [
+            {
+              "type": "exists",
+              "path": "telecom"
+            }
+          ],
+          "rules": "open",
+          "ordered": false,
+          "description": "Slice contact on whether it has a telecom (vs address)"
+        },
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOOrganizationToHVOOrganisationLogical",
+            "map": "har(HVOKontaktuppgiftLogical)"
+          }
+        ]
+      },
+      {
+        "id": "Organization.contact:addressContact",
+        "path": "Organization.contact",
+        "sliceName": "addressContact",
+        "min": 0,
+        "max": "*",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:addressContact.purpose",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.contact.purpose",
+        "min": 1,
+        "mustSupport": true,
+        "binding": {
+          "strength": "required",
+          "valueSet": "http://electronichealth.se/hvo/ValueSet/hvo-contact-purpose"
+        }
+      },
+      {
+        "id": "Organization.contact:addressContact.purpose.coding",
+        "path": "Organization.contact.purpose.coding",
+        "min": 1,
+        "max": "1",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:addressContact.purpose.coding.system",
+        "path": "Organization.contact.purpose.coding.system",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:addressContact.purpose.coding.code",
+        "path": "Organization.contact.purpose.coding.code",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:addressContact.telecom",
+        "path": "Organization.contact.telecom",
+        "max": "0"
+      },
+      {
+        "id": "Organization.contact:addressContact.address",
+        "path": "Organization.contact.address",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:addressContact.address.line",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.contact.address.line",
+        "short": "Street name, number, direction & P.O. Box etc.\r\nThis repeating element order: The order in which lines should appear in an address label",
+        "constraint": [
+          {
+            "key": "hvo-address-line-1",
+            "human": "A line in an address should have max length of 128 characters",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "$this.length() <= 128"
+          }
+        ],
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:addressContact.address.city",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.contact.address.city",
+        "constraint": [
+          {
+            "key": "hvo-address-city-1",
+            "human": "A city in an address should have a max length of 50 characters",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "$this.length() <= 50"
+          }
+        ],
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:addressContact.address.postalCode",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.contact.address.postalCode",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:addressContact.address.country",
+        "path": "Organization.contact.address.country",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:telecomContact",
+        "path": "Organization.contact",
+        "sliceName": "telecomContact",
+        "min": 0,
+        "max": "*",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:telecomContact.purpose",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.contact.purpose",
+        "min": 1,
+        "mustSupport": true,
+        "binding": {
+          "strength": "required",
+          "valueSet": "http://electronichealth.se/hvo/ValueSet/hvo-contact-purpose"
+        }
+      },
+      {
+        "id": "Organization.contact:telecomContact.purpose.coding",
+        "path": "Organization.contact.purpose.coding",
+        "min": 1,
+        "max": "1",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:telecomContact.purpose.coding.system",
+        "path": "Organization.contact.purpose.coding.system",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:telecomContact.purpose.coding.code",
+        "path": "Organization.contact.purpose.coding.code",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:telecomContact.name",
+        "path": "Organization.contact.name",
+        "max": "1",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:telecomContact.telecom",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.contact.telecom",
+        "min": 1,
+        "max": "1",
+        "constraint": [
+          {
+            "key": "hvo-telecom-phone-2",
+            "human": "If telecom.system = phone or fax, value should have max length of 32 characters",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "value.length() <= 32 or (system != 'phone' and system != 'fax')"
+          },
+          {
+            "key": "hvo-telecom-email-2",
+            "human": "If telecom.system = email, value should have max length of 255 characters",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "value.length() <= 255 or system != 'email'"
+          },
+          {
+            "key": "hvo-telecom-url-1",
+            "human": "If telecom.system = url, value should follow valid format. Example: https://example.com",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "value.matches('(https?|ftp)://(-\\\\.)?([^\\\\s/?\\\\.#-]+\\\\.?)+(/[^\\\\s]*)?$') or system != 'url'"
+          },
+          {
+            "key": "hvo-telecom-url-2",
+            "human": "If telecom.system = url, value should have max length of 2000 characters",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "value.length() <= 2000 or system != 'url'"
+          },
+          {
+            "key": "hvo-telecom-email-1",
+            "human": "If telecom.system = email, value should follow valid format Example: test@test.com",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "value.matches('^[\\\\w.-]{1,64}@(?!.{254})[\\\\w.-]+\\\\.[A-Za-z]{2,4}$') or system != 'email'"
+          },
+          {
+            "key": "hvo-telecom-phone-1",
+            "human": "If telecom.system = phone or fax, value should follow format +46123456789",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "value.matches('^\\\\+[1-9][0-9]+$') or (system != 'phone' and system != 'fax')"
+          }
+        ],
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:telecomContact.telecom.system",
+        "path": "Organization.contact.telecom.system",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:telecomContact.telecom.value",
+        "path": "Organization.contact.telecom.value",
+        "min": 1,
+        "constraint": [
+          {
+            "key": "hvo-telecom-value-1",
+            "human": "A telecom value should have max length of 2000 characters",
+            "source": "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization",
+            "severity": "error",
+            "expression": "$this.length() <= 2000"
+          }
+        ],
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.contact:telecomContact.address",
+        "path": "Organization.contact.address",
+        "max": "0"
+      },
+      {
+        "id": "Organization.partOf",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/obligation",
+            "extension": [
+              {
+                "url": "code",
+                "valueCode": "SHALL:populate"
+              },
+              {
+                "url": "actor",
+                "valueCanonical": "http://electronichealth.se/fhir/hvo/ActorDefinition/organization-repository-actor-hvo"
+              }
+            ]
+          }
+        ],
+        "path": "Organization.partOf",
+        "type": [
+          {
+            "code": "Reference",
+            "targetProfile": [
+              "http://electronichealth.se/fhir/hvo/StructureDefinition/HVOOrganization"
+            ],
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/structuredefinition-hierarchy",
+                "valueBoolean": true
+              }
+            ]
+          }
+        ],
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOOrganizationToHVOOrganisationLogical",
+            "map": "relationOrganisation(HVOOrganisationLogical)"
+          }
+        ]
+      },
+      {
+        "id": "Organization.qualification",
+        "path": "Organization.qualification",
+        "mustSupport": true,
+        "mapping": [
+          {
+            "identity": "HVOOrganizationToHVOOrganisationLogical",
+            "map": "har(HVOTillstandLogical)"
+          }
+        ]
+      },
+      {
+        "id": "Organization.qualification.identifier",
+        "path": "Organization.qualification.identifier",
+        "min": 1,
+        "max": "1",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.qualification.identifier.system",
+        "path": "Organization.qualification.identifier.system",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.qualification.identifier.value",
+        "path": "Organization.qualification.identifier.value",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.qualification.code",
+        "path": "Organization.qualification.code",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.qualification.code.coding",
+        "path": "Organization.qualification.code.coding",
+        "min": 1,
+        "max": "1",
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.qualification.code.coding.system",
+        "path": "Organization.qualification.code.coding.system",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.qualification.code.coding.code",
+        "path": "Organization.qualification.code.coding.code",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.qualification.period",
+        "path": "Organization.qualification.period",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.qualification.period.start",
+        "path": "Organization.qualification.period.start",
+        "min": 1,
+        "mustSupport": true
+      },
+      {
+        "id": "Organization.qualification.period.end",
+        "path": "Organization.qualification.period.end",
+        "mustSupport": true
+      }
+    ]
+  }
+}
