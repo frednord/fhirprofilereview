@@ -34,7 +34,7 @@ describe('ComparePage', () => {
     paste('Efter', renamed('Ny avdelning'))
     fireEvent.click(compare)
 
-    expect(within(result()).getByRole('heading', { name: '0 tillagda, 0 borttagna, 1 ändrad' })).toBeInTheDocument()
+    expect(within(result()).getByRole('heading', { name: '0 tillagda, 0 borttagna, 1 ändrad, 0 flyttade' })).toBeInTheDocument()
     expect(within(result()).getByText('Namn ändrades från ”Akut- stroke och neurologiavdelningen” till ”Ny avdelning”')).toBeInTheDocument()
     expect(within(result()).getByText('name')).toBeInTheDocument()
   })
@@ -77,25 +77,26 @@ describe('ComparePage', () => {
   it('loads the example, hides meta.lastUpdated and can show it again', () => {
     render(<ComparePage />)
     fireEvent.click(screen.getByRole('button', { name: 'Visa exempel' }))
-    expect(within(result()).getByRole('heading', { name: '1 tillagd, 2 borttagna, 2 ändrade' })).toBeInTheDocument()
+    expect(within(result()).getByRole('heading', { name: '1 tillagd, 2 borttagna, 2 ändrade, 1 flyttad' })).toBeInTheDocument()
     expect(within(result()).getByText(/1 ändring av meta\.lastUpdated är dold/)).toBeInTheDocument()
 
     fireEvent.click(screen.getByLabelText('Dölj meta.lastUpdated'))
-    expect(within(result()).getByRole('heading', { name: '1 tillagd, 2 borttagna, 3 ändrade' })).toBeInTheDocument()
+    expect(within(result()).getByRole('heading', { name: '1 tillagd, 2 borttagna, 3 ändrade, 1 flyttad' })).toBeInTheDocument()
   })
 
   it('filters the summary by kind with checkboxes, all checked from the start', () => {
     render(<ComparePage />)
     fireEvent.click(screen.getByRole('button', { name: 'Visa exempel' }))
     const filter = within(result()).getByRole('group', { name: 'Visa i sammanfattningen:' })
-    for (const name of [/Tillagda/, /Borttagna/, /Ändrade/]) {
+    for (const name of [/Tillagda/, /Borttagna/, /Ändrade/, /Flyttade/]) {
       expect(within(filter).getByRole('checkbox', { name })).toBeChecked()
     }
-    expect(within(result()).getAllByRole('listitem')).toHaveLength(5)
+    expect(within(result()).getAllByRole('listitem')).toHaveLength(6)
 
     fireEvent.click(within(filter).getByRole('checkbox', { name: /Ändrade/ }))
+    fireEvent.click(within(filter).getByRole('checkbox', { name: /Flyttade/ }))
     expect(within(result()).getByRole('heading', { name: '1 tillagd, 2 borttagna' })).toBeInTheDocument()
-    expect(within(result()).getByText(/Visar 3 av 5 ändringar\./)).toBeInTheDocument()
+    expect(within(result()).getByText(/Visar 3 av 6 ändringar\./)).toBeInTheDocument()
     expect(within(result()).getAllByRole('listitem')).toHaveLength(3)
     expect(within(result()).queryByText(/^Namn ändrades/)).not.toBeInTheDocument()
 
@@ -105,13 +106,22 @@ describe('ComparePage', () => {
     expect(within(result()).queryAllByRole('listitem')).toHaveLength(0)
   })
 
+  it('shows a moved field with both places', () => {
+    render(<ComparePage />)
+    fireEvent.click(screen.getByRole('button', { name: 'Visa exempel' }))
+    const moved = within(result()).getByText(/period flyttades till Kontakt för fax/)
+    expect(moved).toHaveTextContent('Kontakt för telefon (Professionell), period flyttades till Kontakt för fax (Professionell), period: 1970-01-01 – tills vidare')
+    expect(within(result()).getByText(/telecom\.0\.system=phone\]\.period → contact\[.*fax\]\.period/)).toBeInTheDocument()
+    expect(within(result()).getByText('Flyttad')).toBeInTheDocument()
+  })
+
   it('keeps the chosen kinds when comparing again', () => {
     render(<ComparePage />)
     fireEvent.click(screen.getByRole('button', { name: 'Visa exempel' }))
     fireEvent.click(within(result()).getByRole('checkbox', { name: /Ändrade/ }))
     fireEvent.click(screen.getByRole('button', { name: 'Jämför' }))
     expect(within(result()).getByRole('checkbox', { name: /Ändrade/ })).not.toBeChecked()
-    expect(within(result()).getAllByRole('listitem')).toHaveLength(3)
+    expect(within(result()).getAllByRole('listitem')).toHaveLength(4)
   })
 
   it('notes when an input changed after the comparison', () => {

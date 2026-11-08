@@ -162,3 +162,50 @@ describe('selectProfiles', () => {
     expect(texts(before, after)).toEqual(['Enhetstyp togs bort (var vårdenhet (43741000))'])
   })
 })
+
+describe('describeChanges for moved values', () => {
+  const PHONE = { system: 'phone', value: '+46812345' }
+
+  it('names both places with their Swedish labels', () => {
+    const contact = (period?: Record<string, string>) => ({ purpose: PROF, telecom: [PHONE], ...(period ? { period } : {}) })
+    const before = resource('Organization', { contact: [contact({ start: '2020-01-01' }), { ...contact(), telecom: [{ system: 'fax', value: '1' }] }] })
+    const after = resource('Organization', { contact: [contact(), { ...contact({ start: '2020-01-01' }), telecom: [{ system: 'fax', value: '1' }] }] })
+    const [description] = describeChanges(before, after, diffResources(before, after), HVO_LABELS)
+    expect(description?.text).toBe(
+      'Kontakt för telefon (Professionell), period flyttades till Kontakt för fax (Professionell), period: 2020-01-01 – tills vidare',
+    )
+    expect(description?.label).toBe('Kontakt för fax (Professionell), period')
+    expect(description?.fromLabel).toBe('Kontakt för telefon (Professionell), period')
+    expect(description?.source).toBe('rule')
+  })
+
+  it('names the positions when both places have the same label', () => {
+    const contact = (value: string, period?: Record<string, string>) => ({ purpose: PROF, telecom: [{ ...PHONE, value }], ...(period ? { period } : {}) })
+    const before = resource('Organization', { contact: [contact('1', { start: '2020-01-01' }), contact('2')] })
+    const after = resource('Organization', { contact: [contact('1'), contact('2', { start: '2020-01-01' })] })
+    expect(texts(before, after)).toEqual([
+      'Kontakt för telefon (Professionell), period flyttades från contact[0].period till contact[1].period: 2020-01-01 – tills vidare',
+    ])
+  })
+
+  it('falls back to the paths for elements without labels', () => {
+    const before = resource('Organization', { custom: { a: '1' } })
+    const after = resource('Organization', { other: { a: '1' } })
+    const [description] = describeChanges(before, after, diffResources(before, after), HVO_LABELS)
+    expect(description?.text).toBe('Fältet custom flyttades till Fältet other: {"a":"1"}')
+    expect(description?.source).toBe('fallback')
+  })
+
+  it('names the resource for a move inside a Bundle entry', () => {
+    const unitOf = (bundle: FhirResource) => asObject(asObject(asArray(bundle['entry'])[0])['resource'])
+    const [before, after] = edited(PROVIDER_BUNDLE, (bundle) => {
+      asObject(asArray(unitOf(bundle)['contact'])[0])['address'] = { line: ['Gatan 1'], city: 'Linköping' }
+    })
+    unitOf(before)['address'] = { line: ['Gatan 1'], city: 'Linköping' }
+    const descriptions = describeChanges(before, after, diffResources(before, after), HVO_LABELS)
+    expect(descriptions.map((d) => d.text)).toEqual([
+      'Fältet entry[fullUrl=[base]/Organization/9c18b9db-049c-4524-8779-e4d4beebed90].resource.address flyttades till ' +
+        'Organisation 9c18b9db-049c-4524-8779-e4d4beebed90, Kontakt för fax (Professionell), address: Gatan 1, Linköping',
+    ])
+  })
+})

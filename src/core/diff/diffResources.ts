@@ -1,6 +1,7 @@
 import type { FhirResource } from '../../types/fhir'
 import { getString } from '../parser/narrowing'
 import { isPinnedVersion, type IgManifest } from '../profiles/igManifest'
+import { detectMoves } from './detectMoves'
 import { diffValue } from './diffValue'
 import { createIgnoreMatcher } from './ignorePaths'
 import { DEFAULT_LIST_MATCH_KEYS } from './listMatchKeys'
@@ -25,8 +26,8 @@ function collectWarnings(before: FhirResource, after: FhirResource): DiffWarning
 }
 
 /**
- * Compares two versions of a FHIR resource and lists what was added, removed
- * and changed. Deterministic: the same input always gives the same output,
+ * Compares two versions of a FHIR resource and lists what was added, removed,
+ * changed and moved. Deterministic: the same input always gives the same output,
  * ordered by position in the after version.
  *
  * Different resource types or ids are reported as warnings, not errors, so the
@@ -34,15 +35,20 @@ function collectWarnings(before: FhirResource, after: FhirResource): DiffWarning
  */
 export function diffResources(before: FhirResource, after: FhirResource, options: DiffOptions = {}): DiffResult {
   const changes: DiffChange[] = []
+  const matchKeys = { ...DEFAULT_LIST_MATCH_KEYS, ...options.matchKeys }
   diffValue(before, after, {
     path: [],
     elementPath: after.resourceType,
-    matchKeys: { ...DEFAULT_LIST_MATCH_KEYS, ...options.matchKeys },
+    matchKeys,
     isIgnored: createIgnoreMatcher(options.ignorePaths ?? []),
     changes,
   })
 
-  const result: DiffResult = { resourceType: after.resourceType, changes, warnings: collectWarnings(before, after) }
+  const result: DiffResult = {
+    resourceType: after.resourceType,
+    changes: options.detectMoves === false ? changes : detectMoves(changes, matchKeys),
+    warnings: collectWarnings(before, after),
+  }
   if (options.ig !== undefined) result.ig = igContext(options.ig)
   return result
 }

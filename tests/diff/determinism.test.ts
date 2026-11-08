@@ -15,7 +15,7 @@ function modifiedUnit() {
   return after
 }
 
-const FLIPPED: Record<ChangeKind, ChangeKind> = { added: 'removed', removed: 'added', changed: 'changed' }
+const FLIPPED: Record<ChangeKind, ChangeKind> = { added: 'removed', removed: 'added', changed: 'changed', moved: 'moved' }
 const signature = (c: DiffChange, flip = false) =>
   JSON.stringify([flip ? FLIPPED[c.kind] : c.kind, c.elementPath, flip ? c.after : c.before, flip ? c.before : c.after])
 

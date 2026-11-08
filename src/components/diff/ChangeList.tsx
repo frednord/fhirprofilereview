@@ -1,4 +1,4 @@
-import { formatPath } from '../../core/diff'
+import { formatMovePaths, formatPath } from '../../core/diff'
 import { KIND_LABELS, type ChangeDescription } from '../../core/reporting'
 import { KIND_BADGE_CLASSES } from './kindStyles'
 
@@ -12,6 +12,7 @@ export function ChangeList({ descriptions }: ChangeListProps) {
       {descriptions.map((description) => {
         const { change } = description
         const path = formatPath(change.path)
+        const shownPath = change.from === undefined ? path : formatMovePaths(change.from.path, change.path).join(' → ')
         return (
           <li key={`${change.kind}:${path}`} className="flex flex-col gap-1 p-3 sm:flex-row sm:items-start sm:gap-3">
             <span
@@ -22,7 +23,7 @@ export function ChangeList({ descriptions }: ChangeListProps) {
             <div className="min-w-0">
               <p className="break-words text-slate-900">{description.text}</p>
               <p className="break-all font-mono text-xs text-slate-500">
-                {path}
+                {shownPath}
                 {description.source === 'fallback' && (
                   <span className="ml-2 rounded bg-slate-100 px-1.5 py-0.5 font-sans text-slate-600">
                     saknar svensk etikett

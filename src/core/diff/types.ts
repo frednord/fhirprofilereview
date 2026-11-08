@@ -3,7 +3,7 @@ import type { IgManifest } from '../profiles/igManifest'
 import type { ListMatchKeyConfig } from './listMatchKeys'
 import type { MatchReason } from './matchListItems'
 
-export type ChangeKind = 'added' | 'removed' | 'changed'
+export type ChangeKind = 'added' | 'removed' | 'changed' | 'moved'
 
 /**
  * One step in the path to a change. List items carry both indexes and the key
@@ -30,8 +30,11 @@ export interface DiffChange {
    * so the path can be looked up in that resource's profile.
    */
   elementPath: string
+  /** For 'moved', the same value on both sides. */
   before?: JsonValue
   after?: JsonValue
+  /** Where a moved value used to be. Path and elementPath above say where it is now. */
+  from?: { path: readonly PathSegment[]; elementPath: string }
 }
 
 export type DiffWarningKind = 'resource-type-mismatch' | 'id-mismatch'
@@ -64,6 +67,11 @@ export interface DiffOptions {
    * to every resource, including contained ones.
    */
   ignorePaths?: readonly string[]
+  /**
+   * Reports a value removed in one place and added unchanged in another as one
+   * 'moved' change. On by default; see detectMoves.
+   */
+  detectMoves?: boolean
   /** The IG the comparison is made against, echoed in the result so reports state their version. */
   ig?: IgManifest
 }

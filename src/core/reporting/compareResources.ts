@@ -1,3 +1,4 @@
+import { detectMoves } from '../diff/detectMoves'
 import { diffResources } from '../diff/diffResources'
 import type { DiffResult, DiffWarning } from '../diff/types'
 import { locateJsonError } from '../parser/jsonErrorLocation'
@@ -110,13 +111,15 @@ export function compareResources(beforeText: string, afterText: string, settings
 }
 
 function compare(before: FhirResource, after: FhirResource, settings: CompareSettings): Comparison {
-  const options = settings.ig === undefined ? {} : { ig: settings.ig }
-  const diff = diffResources(before, after, { ...options, ignorePaths: settings.ignorePaths })
+  const options = { detectMoves: false, ...(settings.ig === undefined ? {} : { ig: settings.ig }) }
+  const raw = diffResources(before, after, { ...options, ignorePaths: settings.ignorePaths })
   // Diffing again without ignorePaths is the simplest way to count exactly what the setting hid.
+  // Both counts are taken before moves are joined, since a move turns two changes into one.
   const hiddenCount =
     settings.ignorePaths.length === 0
       ? 0
-      : diffResources(before, after, options).changes.length - diff.changes.length
+      : diffResources(before, after, options).changes.length - raw.changes.length
+  const diff = { ...raw, changes: detectMoves(raw.changes) }
   const descriptions = describeChanges(before, after, diff, settings.labels)
 
   return {

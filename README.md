@@ -50,13 +50,18 @@ Se `CLAUDE.md` för arkitekturen. Det viktigaste:
   anger vilka fält som identifierar ett listelement (t.ex. `identifier.system`).
   Ordningsändringar ger därför ingen falsk diff. Nycklar slås upp på full
   elementsökväg först (`Group.characteristic`) och sedan på elementnamn
-  (`identifier`).
+  (`identifier`). Av samma skäl rapporteras en ny ordning i en lista inte som
+  en flytt.
+- **Flyttade värden känns igen.** `detectMoves` i `src/core/diff/detectMoves.ts`
+  gör om ett värde som tagits bort på ett ställe och lagts till oförändrat på
+  ett annat till en enda ändring av typen `moved`. Det är användbart när en
+  äldre och en nyare profilversion placerar samma uppgift på olika ställen.
 
 ## Diff-motorn
 
 `diffResources(before, after, options)` i `src/core/diff` jämför två versioner
-av en resurs och returnerar en deterministisk lista med `added`, `removed` och
-`changed`, ordnad efter positionen i den nya versionen. Den är ren TypeScript och
+av en resurs och returnerar en deterministisk lista med `added`, `removed`,
+`changed` och `moved`, ordnad efter positionen i den nya versionen. Den är ren TypeScript och
 kan användas från UI, CLI och tester.
 
 - Varje ändring har en `path` (med listposternas matchnyckel) och en
@@ -65,6 +70,23 @@ kan användas från UI, CLI och tester.
 - `formatPath` gör sökvägen läsbar: `identifier[system=urn:oid:1.2.752.29.4.19].value`.
 - Ett värde som bara finns på ena sidan rapporteras en gång, som helhet.
 - Olika `resourceType` eller `id` ger varningar, men jämförelsen görs ändå.
+- **Flyttar** (`moved`) har både `path` (var värdet finns nu) och `from` (var det
+  fanns förut). Bara exakta kopior räknas, så resultatet är deterministiskt; ett
+  värde som både flyttats och ändrats blir fortfarande borttaget plus tillagt.
+  Tre fall känns igen:
+  1. Ett värde tas bort på ett ställe och läggs till på ett annat, t.ex.
+     `telecom` till en befintlig `contact.telecom`.
+  2. Ett borttaget värde finns inuti något nytt. Den nya föräldern rapporteras
+     fortfarande som tillagd, och flytten listas direkt efter den.
+  3. Ett tillagt värde fanns inuti något som tagits bort. Den gamla föräldern
+     rapporteras fortfarande som borttagen.
+
+  En lista med ett enda element jämförs också som det elementet, så att t.ex. en
+  `contained`-resurs som blivit en `Bundle.entry` känns igen. Ensamma
+  primitiva värden räknas bara som flyttade om de behåller sitt elementnamn,
+  eftersom ett `true` eller en siffra på två ställen inte säger något. Tomma
+  objekt och listor räknas aldrig. `options.detectMoves: false` stänger av
+  igenkänningen.
 - `options.matchKeys` kompletterar standardnycklarna, `options.ignorePaths`
   döljer element (`meta.lastUpdated` gäller alla resurser,
   `Organization.meta` bara Organization) och `options.ig` lägger IG-versionen i
@@ -95,6 +117,11 @@ Det är deterministiskt och utan AI.
   används.
 - **Resurser i `contained` och `Bundle.entry`** beskrivs med sin egen profil och
   får resursen som prefix: "Verksamhet X: Verksamhetstyp togs bort (var 1123)".
+- **Flyttar** beskrivs med båda platsernas etiketter: "Kontakt för telefon
+  (Professionell), period flyttades till Kontakt för fax (Professionell),
+  period: 1970-01-01 – tills vidare". Har båda platserna samma etikett visas
+  sökvägarna med listpositioner i stället, t.ex. `contact[0].period` till
+  `contact[1].period`.
 - **Reserv:** en ändring utan regel beskrivs med sin sökväg ("Fältet language
   lades till: ”sv”") och markeras med `source: 'fallback'`, så att det syns
   vilka regler som saknas.
@@ -122,12 +149,14 @@ Allt körs i webbläsaren; inget skickas till någon server.
 - **Ogiltig JSON** får rad och kolumn på svenska. Chrome och Node säger inte
   längre var `JSON.parse` stannade, så `src/core/parser/jsonErrorLocation.ts`
   hittar platsen själv.
-- **Kryssrutorna Tillagda, Borttagna och Ändrade** väljer vilka ändringstyper
+- **Kryssrutorna Tillagda, Borttagna, Ändrade och Flyttade** väljer vilka ändringstyper
   som visas i rubriken och listan. Alla är ikryssade från början, och valet
   ligger kvar mellan jämförelser. När valet döljer ändringar står det t.ex.
   "Visar 3 av 5 ändringar".
 - **Jämförelsen körs bara vid klick**, så resultatet hoppar inte medan man
   skriver. Ändras en text efteråt visas en påminnelse.
+- En flyttad ändring visar båda sökvägarna under texten, t.ex.
+  `contact[…phone].period → contact[…fax].period`. Exemplet innehåller en flytt.
 - Ändringar utan svensk etikett märks "saknar svensk etikett", så att luckor i
   etikettdatan syns.
 
