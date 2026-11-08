@@ -64,7 +64,7 @@ describe('compareResources', () => {
 
     const shown = compareResources(before, after, { ...SETTINGS, ignorePaths: [] })
     if (!shown.ok) throw new Error('Förväntade en jämförelse')
-    expect(shown.comparison.counts).toEqual({ added: 0, removed: 0, changed: 2 })
+    expect(shown.comparison.counts).toEqual({ added: 0, removed: 0, changed: 2, moved: 0 })
     expect(shown.comparison.hiddenCount).toBe(0)
   })
 
@@ -106,6 +106,7 @@ describe('demo example', () => {
     expect(counts.added).toBeGreaterThan(0)
     expect(counts.removed).toBeGreaterThan(0)
     expect(counts.changed).toBeGreaterThan(0)
+    expect(counts.moved).toBeGreaterThan(0)
     expect(hiddenCount).toBe(1)
     expect(descriptions.filter((d) => d.source === 'fallback')).toEqual([])
   })

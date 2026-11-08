@@ -1,4 +1,4 @@
-import { formatPath } from '../diff/formatPath'
+import { formatMovePaths, formatPath } from '../diff/formatPath'
 import type { DiffChange, DiffResult, PathSegment } from '../diff/types'
 import type { FhirResource } from '../../types/fhir'
 import type { JsonObject, JsonValue } from '../../types/json'
@@ -215,30 +215,86 @@ function sentence(change: DiffChange, label: string, labels: LabelSet): string {
   const after = formatValue(change.after ?? null, labels.codes)
   if (change.kind === 'changed') return `${label} ändrades från ${before} till ${after}`
   if (change.kind === 'added') return `${label} lades till: ${after}`
+  // A move always carries its origin from detectMoves; this only covers a hand-made change without one.
+  if (change.kind === 'moved') return `${label} flyttades hit: ${after}`
   return `${label} togs bort (var ${before})`
+}
+
+interface NamedPlace {
+  named: NamedLabel
+  prefix: string[]
+  profiles: readonly ProfileLabels[]
+}
+
+function namePlace(change: DiffChange, before: FhirResource, after: FhirResource, labels: LabelSet): NamedPlace {
+  const walk = walkPath(change, before, after, labels)
+  if (walk.anchor === undefined) {
+    // A fallback inside a nested resource still names the path from the root, which identifies the resource already.
+    return { named: { label: `Fältet ${formatPath(change.path)}`, complete: false }, prefix: [], profiles: walk.profiles }
+  }
+  return { named: nameChild(walk.anchor, walk.rest, labels), prefix: walk.prefix, profiles: walk.profiles }
+}
+
+function withPrefix(prefix: readonly string[], text: string): string {
+  return `${prefix.map((p) => `${p}: `).join('')}${text}`
+}
+
+/** "Verksamhet X, Telefon", for a move between two resources in the same Bundle. */
+function placeName(place: NamedPlace): string {
+  return [...place.prefix, place.named.label].join(', ')
+}
+
+/**
+ * "Telefon flyttades till Kontakt (Professionell), telefon: telefon 08-123".
+ * When both places have the same label, e.g. between two contacts that are
+ * named alike, the paths are what tells them apart.
+ */
+function describeMove(
+  change: DiffChange & { from: NonNullable<DiffChange['from']> },
+  before: FhirResource,
+  after: FhirResource,
+  labels: LabelSet,
+): ChangeDescription {
+  const to = namePlace(change, before, after, labels)
+  const from = namePlace({ ...change, path: change.from.path, elementPath: change.from.elementPath }, before, after, labels)
+  const value = formatValue(change.after ?? null, labels.codes)
+  const samePrefix = from.prefix.join('\u0000') === to.prefix.join('\u0000')
+  let text: string
+  if (from.named.label === to.named.label && samePrefix) {
+    const [fromPath, toPath] = formatMovePaths(change.from.path, change.path)
+    text = withPrefix(to.prefix, `${to.named.label} flyttades från ${fromPath} till ${toPath}: ${value}`)
+  } else if (samePrefix) {
+    text = withPrefix(to.prefix, `${from.named.label} flyttades till ${to.named.label}: ${value}`)
+  } else {
+    text = `${placeName(from)} flyttades till ${placeName(to)}: ${value}`
+  }
+  return {
+    change,
+    profiles: to.profiles.map((p) => p.profile),
+    label: to.named.label,
+    fromLabel: from.named.label,
+    text,
+    source: from.named.complete && to.named.complete ? 'rule' : 'fallback',
+  }
 }
 
 /** Describes one change; see describeChanges. */
 export function describeChange(change: DiffChange, before: FhirResource, after: FhirResource, labels: LabelSet): ChangeDescription {
-  const walk = walkPath(change, before, after, labels)
-  const named: NamedLabel =
-    walk.anchor === undefined
-      ? { label: `Fältet ${formatPath(change.path)}`, complete: false }
-      : nameChild(walk.anchor, walk.rest, labels)
-  // A fallback inside a nested resource still names the path from the root, which identifies the resource already.
-  const prefix = walk.anchor === undefined ? '' : walk.prefix.map((p) => `${p}: `).join('')
+  const { from } = change
+  if (change.kind === 'moved' && from !== undefined) return describeMove({ ...change, from }, before, after, labels)
+  const place = namePlace(change, before, after, labels)
   return {
     change,
-    profiles: walk.profiles.map((p) => p.profile),
-    label: named.label,
-    text: `${prefix}${sentence(change, named.label, labels)}`,
-    source: named.complete ? 'rule' : 'fallback',
+    profiles: place.profiles.map((p) => p.profile),
+    label: place.named.label,
+    text: withPrefix(place.prefix, sentence(change, place.named.label, labels)),
+    source: place.named.complete ? 'rule' : 'fallback',
   }
 }
 
 /**
  * Turns the changes from diffResources into Swedish sentences such as
- * "HSA-id ändrades från ”X” till ”Y”". Deterministic and free of IG knowledge:
+ * "HSA-id ändrades från ”X” till ”Y”" or "Telefon flyttades till Kontakt, telefon". Deterministic and free of IG knowledge:
  * everything profile specific comes from the label set. Both versions of the
  * resource are needed because slices are recognised from the whole list item,
  * which a change below the item does not carry.

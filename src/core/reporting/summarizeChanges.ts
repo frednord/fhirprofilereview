@@ -4,10 +4,10 @@ import type { ChangeDescription } from './types'
 export type ChangeCounts = Readonly<Record<ChangeKind, number>>
 
 /** Display order of change kinds, also used by the filter checkboxes. */
-export const CHANGE_KINDS: readonly ChangeKind[] = ['added', 'removed', 'changed']
+export const CHANGE_KINDS: readonly ChangeKind[] = ['added', 'removed', 'changed', 'moved']
 
 export function countChanges(descriptions: readonly ChangeDescription[]): ChangeCounts {
-  const counts: Record<ChangeKind, number> = { added: 0, removed: 0, changed: 0 }
+  const counts: Record<ChangeKind, number> = { added: 0, removed: 0, changed: 0, moved: 0 }
   for (const description of descriptions) counts[description.change.kind] += 1
   return counts
 }
@@ -24,6 +24,7 @@ const KIND_WORDS: Readonly<Record<ChangeKind, readonly [singular: string, plural
   added: ['tillagd', 'tillagda'],
   removed: ['borttagen', 'borttagna'],
   changed: ['ändrad', 'ändrade'],
+  moved: ['flyttad', 'flyttade'],
 }
 
 function capitalize(word: string): string {
@@ -35,6 +36,7 @@ export const KIND_LABELS: Readonly<Record<ChangeKind, string>> = {
   added: capitalize(KIND_WORDS.added[0]),
   removed: capitalize(KIND_WORDS.removed[0]),
   changed: capitalize(KIND_WORDS.changed[0]),
+  moved: capitalize(KIND_WORDS.moved[0]),
 }
 
 /** Plural labels for the filter, which picks whole groups of changes, e.g. "Tillagda". */
@@ -42,6 +44,7 @@ export const KIND_FILTER_LABELS: Readonly<Record<ChangeKind, string>> = {
   added: capitalize(KIND_WORDS.added[1]),
   removed: capitalize(KIND_WORDS.removed[1]),
   changed: capitalize(KIND_WORDS.changed[1]),
+  moved: capitalize(KIND_WORDS.moved[1]),
 }
 
 /** "1 tillagd", "3 ändrade". */

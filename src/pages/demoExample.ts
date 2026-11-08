@@ -94,7 +94,10 @@ export const DEMO_BEFORE: JsonObject = {
   }
 }
 
-/** A typical update: new name and phone number, a fax contact added, a business code and the start date removed. */
+/**
+ * A typical update: new name and phone number, a fax contact added, a business
+ * code and the start date removed, and the contact period moved to the fax contact.
+ */
 function editDemo(resource: JsonObject): JsonObject {
   const after = structuredClone(resource)
   after['meta'] = { lastUpdated: '2026-10-28T14:30:00+01:00' }
@@ -103,11 +106,11 @@ function editDemo(resource: JsonObject): JsonObject {
     {
       purpose: { coding: [{ code: 'PROF', system: 'http://electronichealth.se/CodeSystem/fhir/hvo-extended-contact-entity-type' }] },
       telecom: [{ system: 'phone', value: '+46730748600' }],
-      period: { start: '1970-01-01' },
     },
     {
       purpose: { coding: [{ code: 'PROF', system: 'http://electronichealth.se/CodeSystem/fhir/hvo-extended-contact-entity-type' }] },
       telecom: [{ system: 'fax', value: '+46812345678' }],
+      period: { start: '1970-01-01' },
     },
   ]
   after['extension'] = [

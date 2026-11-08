@@ -62,6 +62,8 @@ export interface ChangeDescription {
   /** Profiles whose labels were used for the resource the change is in. */
   profiles: readonly string[]
   label: string
+  /** For a moved value, the label of the place it moved from; label is where it is now. */
+  fromLabel?: string
   text: string
   source: DescriptionSource
 }
