@@ -11,6 +11,8 @@ interface ChangeMapProps {
   shownKinds: ReadonlySet<ChangeKind>
 }
 
+const SMALL_BUTTON = 'rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-100'
+
 function Legend() {
   return (
     <ul aria-label="Förklaring" className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
@@ -43,9 +45,10 @@ export function ChangeMap({ map, shownKinds }: ChangeMapProps) {
   const [toggled, setToggled] = useState<ReadonlySet<string>>(() => new Set())
   const [hovered, setHovered] = useState<string | undefined>(undefined)
   const [pinned, setPinned] = useState<string | undefined>(undefined)
+  const [showAll, setShowAll] = useState(false)
 
-  const beforeRows = useMemo(() => flattenMap(map.before, shownKinds, toggled), [map, shownKinds, toggled])
-  const afterRows = useMemo(() => flattenMap(map.after, shownKinds, toggled), [map, shownKinds, toggled])
+  const beforeRows = useMemo(() => flattenMap(map.before, shownKinds, toggled, showAll), [map, shownKinds, toggled, showAll])
+  const afterRows = useMemo(() => flattenMap(map.after, shownKinds, toggled, showAll), [map, shownKinds, toggled, showAll])
   const links = useMemo(() => shownLinks(map.links, shownKinds), [map, shownKinds])
   // One key per layout, so the rows are measured again only when they change.
   const layoutKey = useMemo(() => [beforeRows, afterRows], [beforeRows, afterRows])
@@ -55,11 +58,26 @@ export function ChangeMap({ map, shownKinds }: ChangeMapProps) {
   const active = pinned ?? hovered
   const onToggle = (id: string): void => setToggled((current) => toggledWith(current, id))
   const onSelect = (id: string): void => setPinned((current) => (current === id ? undefined : id))
+  // Both buttons start over from a clean state, so earlier single toggles do not linger.
+  const expandAll = (all: boolean): void => {
+    setShowAll(all)
+    setToggled(new Set())
+  }
   const treeProps = { links: linkById, active, onHover: setHovered, onSelect, onToggle }
 
   return (
     <div className="space-y-2">
-      <Legend />
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Legend />
+        <div className="flex gap-2">
+          <button type="button" onClick={() => expandAll(true)} className={SMALL_BUTTON}>
+            Expandera alla
+          </button>
+          <button type="button" onClick={() => expandAll(false)} className={SMALL_BUTTON}>
+            Minimera alla
+          </button>
+        </div>
+      </div>
       <div
         ref={container}
         className="relative grid grid-cols-1 gap-4 rounded-lg border border-slate-200 bg-white p-3 sm:grid-cols-[minmax(0,1fr)_7rem_minmax(0,1fr)] sm:gap-0"

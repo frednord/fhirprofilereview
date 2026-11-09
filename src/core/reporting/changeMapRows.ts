@@ -29,6 +29,8 @@ interface FlattenContext {
   kinds: ReadonlySet<ChangeKind>
   /** Node and group ids the user has opened or closed, the opposite of their default. */
   toggled: ReadonlySet<string>
+  /** Every branch open and nothing folded, so the whole resource is shown. */
+  showAll: boolean
   rows: MapRow[]
 }
 
@@ -45,10 +47,10 @@ function isInteresting(node: MapNode, kinds: ReadonlySet<ChangeKind>): boolean {
   return isShownOwn(node, kinds) || hasShownBelow(node, kinds)
 }
 
-function addChildren(node: MapNode, depth: number, inherited: NodeStatus, openedByUser: boolean, ctx: FlattenContext): void {
+function addChildren(node: MapNode, depth: number, inherited: NodeStatus, showEverything: boolean, ctx: FlattenContext): void {
   // Grouping only applies to branches that open by themselves; a branch the
   // user opened shows everything, since that is what they asked to see.
-  if (openedByUser) {
+  if (showEverything) {
     for (const child of node.children) addNode(child, depth, inherited, ctx)
     return
   }
@@ -76,12 +78,12 @@ function addChildren(node: MapNode, depth: number, inherited: NodeStatus, opened
 function addNode(node: MapNode, depth: number, inherited: NodeStatus, ctx: FlattenContext): void {
   const own = isShownOwn(node, ctx.kinds)
   const status = own ? node.status : inherited
-  const opensByItself = hasShownBelow(node, ctx.kinds)
+  const opensByItself = ctx.showAll || hasShownBelow(node, ctx.kinds)
   const toggled = ctx.toggled.has(node.id)
   const expandable = node.children.length > 0
   const expanded = expandable && opensByItself !== toggled
   ctx.rows.push({ type: 'node', id: node.id, node, depth, status, own, expandable, expanded })
-  if (expanded) addChildren(node, depth + 1, status, !opensByItself, ctx)
+  if (expanded) addChildren(node, depth + 1, status, ctx.showAll || !opensByItself, ctx)
 }
 
 /**
@@ -91,9 +93,16 @@ function addNode(node: MapNode, depth: number, inherited: NodeStatus, ctx: Flatt
  * ends on screen. Unchanged neighbours are folded into one group row, and the
  * inside of an added or removed value stays closed, since its own row already
  * shows the whole value. `toggled` flips the default for the ids it holds.
+ * With `showAll`, every branch is open and nothing is folded; `toggled` then
+ * closes the branches it holds.
  */
-export function flattenMap(root: MapNode, kinds: ReadonlySet<ChangeKind>, toggled: ReadonlySet<string> = new Set()): MapRow[] {
-  const ctx: FlattenContext = { kinds, toggled, rows: [] }
+export function flattenMap(
+  root: MapNode,
+  kinds: ReadonlySet<ChangeKind>,
+  toggled: ReadonlySet<string> = new Set(),
+  showAll = false,
+): MapRow[] {
+  const ctx: FlattenContext = { kinds, toggled, showAll, rows: [] }
   addNode(root, 0, 'unchanged', ctx)
   return ctx.rows
 }

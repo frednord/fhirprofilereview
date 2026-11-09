@@ -46,4 +46,16 @@ describe('ChangeMap', () => {
     fireEvent.click(within(after).getByRole('button', { name: '▸ 6 oförändrade fält' }))
     expect(within(after).getByText('resourceType')).toBeInTheDocument()
   })
+
+  it('expands every field and folds them again', () => {
+    openMap()
+    const after = screen.getByRole('region', { name: 'Karta efter' })
+    fireEvent.click(screen.getByRole('button', { name: 'Expandera alla' }))
+    // The resource itself and the contained HealthcareService both have one.
+    expect(within(after).getAllByText('resourceType')).toHaveLength(2)
+    expect(within(after).queryByRole('button', { name: /oförändra/ })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Minimera alla' }))
+    expect(within(after).queryByText('resourceType')).not.toBeInTheDocument()
+    expect(within(after).getByRole('button', { name: '▸ 6 oförändrade fält' })).toBeInTheDocument()
+  })
 })

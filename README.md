@@ -163,7 +163,9 @@ Allt körs i webbläsaren; inget skickas till någon server.
   som träd sida vid sida med pilar: flyttade fält får en blå pil från gamla till
   nya platsen, ändrade en gul pil mellan fältet i Före och Efter, borttagna en
   röd linje till ett ✕ och tillagda en grön pil från ett +. Grenar med ändringar
-  är utfällda och oförändrade fält hopfällda till "N oförändrade fält". Kartan
+  är utfällda och oförändrade fält hopfällda till "N oförändrade fält".
+  **Expandera alla** visar hela resursen och **Minimera alla** går tillbaka till
+  att bara visa grenar med ändringar. Kartan
   följer kryssrutorna, och den som pekar eller klickar på ett fält eller en pil
   ser paret framhävt. På smala skärmar visas träden under varandra, och varje
   ändrat fält får en text som "Flyttad till …" i stället för pilar.

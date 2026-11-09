@@ -114,6 +114,26 @@ describe('flattenMap', () => {
   })
 })
 
+describe('flattenMap with showAll', () => {
+  function countNodes(node: MapNode): number {
+    return 1 + node.children.reduce((sum, child) => sum + countNodes(child), 0)
+  }
+
+  it('opens every branch and folds nothing', () => {
+    const map = demoMap()
+    const rows = flattenMap(map.after, ALL, new Set(), true)
+    expect(rows.some((row) => row.type === 'group')).toBe(false)
+    expect(rows).toHaveLength(countNodes(map.after))
+    expect(rows.every((row) => row.type === 'node' && (row.expanded || !row.expandable))).toBe(true)
+  })
+
+  it('still lets a single branch be closed', () => {
+    const rows = flattenMap(demoMap().after, ALL, new Set(['after:/identifier']), true)
+    expect(nodeIds(rows)).toContain('after:/identifier')
+    expect(nodeIds(rows)).not.toContain('after:/identifier/0')
+  })
+})
+
 describe('shownLinks and formatGroupLabel', () => {
   it('keeps the links of the chosen kinds', () => {
     expect(shownLinks(demoMap().links, new Set(['moved'] as const)).map((link) => link.id)).toEqual(['link:4'])
