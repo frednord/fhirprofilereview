@@ -81,17 +81,17 @@ function renderPlaceholder(item: JsonValue, spec: string, labels: LabelSet): str
   return codeLabel(labels.codes, system, value) ?? value
 }
 
-function renderLabel(template: string, item: JsonValue, labels: LabelSet): string {
+export function renderLabel(template: string, item: JsonValue, labels: LabelSet): string {
   return template.replace(/\{([^}]+)\}/g, (_, spec: string) => renderPlaceholder(item, spec, labels))
 }
 
-function resourceName(profiles: readonly ProfileLabels[], resource: JsonObject): string {
+export function resourceName(profiles: readonly ProfileLabels[], resource: JsonObject): string {
   const name = profiles[0]?.resourceLabel ?? getString(resource, 'resourceType') ?? 'Resurs'
   const id = getString(resource, 'id')
   return id === undefined ? name : `${name} ${id}`
 }
 
-function findElementLabel(profiles: readonly ProfileLabels[], elementPath: string): string | undefined {
+export function findElementLabel(profiles: readonly ProfileLabels[], elementPath: string): string | undefined {
   for (const profile of profiles) {
     const label = getOwn(profile.elements, elementPath)
     if (label !== undefined) return label
@@ -99,7 +99,7 @@ function findElementLabel(profiles: readonly ProfileLabels[], elementPath: strin
   return undefined
 }
 
-function findSlice(profiles: readonly ProfileLabels[], elementPath: string, item: JsonValue | undefined): SliceLabel | undefined {
+export function findSlice(profiles: readonly ProfileLabels[], elementPath: string, item: JsonValue | undefined): SliceLabel | undefined {
   for (const profile of profiles) {
     const slice = profile.slices.find((s) => s.element === elementPath && conditionHolds(item, s.when))
     if (slice !== undefined) return slice

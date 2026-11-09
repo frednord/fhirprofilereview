@@ -159,6 +159,17 @@ Allt körs i webbläsaren; inget skickas till någon server.
   `contact[…phone].period → contact[…fax].period`. Exemplet innehåller en flytt.
 - Ändringar utan svensk etikett märks "saknar svensk etikett", så att luckor i
   etikettdatan syns.
+- **Karta** (växlaren Lista | Karta, Lista är förvald) visar båda versionerna
+  som träd sida vid sida med pilar: flyttade fält får en blå pil från gamla till
+  nya platsen, ändrade en gul pil mellan fältet i Före och Efter, borttagna en
+  röd linje till ett ✕ och tillagda en grön pil från ett +. Grenar med ändringar
+  är utfällda och oförändrade fält hopfällda till "N oförändrade fält". Kartan
+  följer kryssrutorna, och den som pekar eller klickar på ett fält eller en pil
+  ser paret framhävt. På smala skärmar visas träden under varandra, och varje
+  ändrat fält får en text som "Flyttad till …" i stället för pilar.
+  Träden och kopplingarna byggs av `buildChangeMap` och `flattenMap` i
+  `src/core/reporting`; komponenten mäter bara var raderna hamnade och ritar
+  pilarna som SVG.
 
 ## Testdata
 
