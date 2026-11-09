@@ -11,7 +11,15 @@ export type ChangeKind = 'added' | 'removed' | 'changed' | 'moved'
  * instead of "identifier[0]".
  */
 export type PathSegment =
-  | { kind: 'property'; name: string }
+  | {
+      kind: 'property'
+      name: string
+      /**
+       * The key in the before version, when it is spelt differently there,
+       * e.g. "valuePeriod" when name is "ValuePeriod". See KeySpellingWarning.
+       */
+      beforeName?: string
+    }
   | {
       kind: 'item'
       beforeIndex: number | undefined
@@ -45,6 +53,21 @@ export interface DiffWarning {
   after: string | undefined
 }
 
+/**
+ * A key spelt differently in the two versions, e.g. "valuePeriod" before and
+ * "ValuePeriod" after. The values are still compared as the same field, but a
+ * FHIR reader would not see the misspelt key as that element at all.
+ */
+export interface KeySpellingWarning {
+  /** Where the key is, with the after spelling; the last segment carries the before spelling. */
+  path: readonly PathSegment[]
+  elementPath: string
+  beforeKey: string
+  afterKey: string
+  /** True when the keys only differ in upper and lower case. */
+  caseOnly: boolean
+}
+
 export interface DiffIgContext {
   packageId: string
   version: string
@@ -55,6 +78,8 @@ export interface DiffResult {
   resourceType: string
   changes: DiffChange[]
   warnings: DiffWarning[]
+  /** Keys spelt differently in the two versions, in after-order. */
+  keyWarnings: KeySpellingWarning[]
   ig?: DiffIgContext
 }
 

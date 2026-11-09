@@ -1,8 +1,9 @@
 import type { JsonArray, JsonObject, JsonValue } from '../../types/json'
 import { isJsonArray, isJsonObject } from '../parser/narrowing'
+import { pairMisspelledKeys, type KeyPair } from './keySpelling'
 import { resolveMatchKeys, type ListMatchKeyConfig } from './listMatchKeys'
 import { describeMatchKey, matchListItemsByKeys, type ListItemPair } from './matchListItems'
-import type { ChangeKind, DiffChange, PathSegment } from './types'
+import type { ChangeKind, DiffChange, KeySpellingWarning, PathSegment } from './types'
 
 export interface DiffContext {
   path: readonly PathSegment[]
@@ -10,6 +11,7 @@ export interface DiffContext {
   matchKeys: ListMatchKeyConfig
   isIgnored: (elementPath: string) => boolean
   changes: DiffChange[]
+  keyWarnings: KeySpellingWarning[]
 }
 
 function record(ctx: DiffContext, kind: ChangeKind, before: JsonValue | undefined, after: JsonValue | undefined): void {
@@ -33,23 +35,43 @@ function resourceTypeOf(before: JsonObject, after: JsonObject): string | undefin
 }
 
 /** Keys in after-order first, then keys only present before, so output follows the new version. */
-function orderedKeys(before: JsonObject, after: JsonObject): string[] {
+function orderedKeys(before: JsonObject, after: JsonObject, pairedBefore: ReadonlySet<string>): string[] {
   const keys = Object.keys(after)
   for (const key of Object.keys(before)) {
-    if (!Object.hasOwn(after, key)) keys.push(key)
+    if (!Object.hasOwn(after, key) && !pairedBefore.has(key)) keys.push(key)
   }
   return keys
 }
 
+function misspelledKeys(before: JsonObject, after: JsonObject): KeyPair[] {
+  const beforeOnly = Object.keys(before).filter((key) => !Object.hasOwn(after, key))
+  const afterOnly = Object.keys(after).filter((key) => !Object.hasOwn(before, key))
+  if (beforeOnly.length === 0 || afterOnly.length === 0) return []
+  return pairMisspelledKeys(beforeOnly, afterOnly)
+}
+
+function diffMisspelled(before: JsonObject, after: JsonObject, pair: KeyPair, child: DiffContext): void {
+  const { beforeKey, afterKey, caseOnly } = pair
+  child.keyWarnings.push({ path: child.path, elementPath: child.elementPath, beforeKey, afterKey, caseOnly })
+  diffValue(before[beforeKey] ?? null, after[afterKey] ?? null, child)
+}
+
 function diffObjects(before: JsonObject, after: JsonObject, ctx: DiffContext): void {
   const base = resourceTypeOf(before, after) ?? ctx.elementPath
-  for (const key of orderedKeys(before, after)) {
+  // A key spelt differently on the two sides is compared as one field and
+  // reported as a warning, instead of as one removed and one added field.
+  const pairs = new Map(misspelledKeys(before, after).map((pair) => [pair.afterKey, pair]))
+  const pairedBefore = new Set([...pairs.values()].map((pair) => pair.beforeKey))
+  for (const key of orderedKeys(before, after, pairedBefore)) {
     const elementPath = `${base}.${key}`
     if (ctx.isIgnored(elementPath)) continue
-    const child: DiffContext = { ...ctx, elementPath, path: [...ctx.path, { kind: 'property', name: key }] }
+    const pair = pairs.get(key)
+    const segment: PathSegment = pair === undefined ? { kind: 'property', name: key } : { kind: 'property', name: key, beforeName: pair.beforeKey }
+    const child: DiffContext = { ...ctx, elementPath, path: [...ctx.path, segment] }
     const hasBefore = Object.hasOwn(before, key)
     const hasAfter = Object.hasOwn(after, key)
-    if (hasBefore && hasAfter) diffValue(before[key] ?? null, after[key] ?? null, child)
+    if (pair !== undefined) diffMisspelled(before, after, pair, child)
+    else if (hasBefore && hasAfter) diffValue(before[key] ?? null, after[key] ?? null, child)
     else if (hasAfter) record(child, 'added', undefined, after[key])
     else record(child, 'removed', before[key], undefined)
   }

@@ -1,10 +1,11 @@
-import { formatMovePaths } from '../diff/formatPath'
-import type { ChangeKind, PathSegment } from '../diff/types'
+import { formatMovePaths, propertyNameAt } from '../diff/formatPath'
+import type { ChangeKind, KeySpellingWarning, PathSegment } from '../diff/types'
 import { getString, isJsonArray, isJsonObject } from '../parser/narrowing'
 import type { FhirResource } from '../../types/fhir'
 import type { JsonValue } from '../../types/json'
 import { findElementLabel, findSlice, renderLabel, resourceName, selectProfiles } from './describeChanges'
 import { formatValue } from './formatValue'
+import { describeKeyWarning, keyWarningNote } from './keyWarnings'
 import type { ChangeDescription, LabelSet, ProfileLabels } from './types'
 
 export type MapSide = 'before' | 'after'
@@ -32,6 +33,10 @@ export interface MapNode {
   linkId?: string
   /** Kinds of the own changes anywhere below, so the view knows which branches to open. */
   changesBelow: readonly ChangeKind[]
+  /** The key warning for this field, when its key is spelt differently in the other version. */
+  keyWarningId?: string
+  /** Whether a key warning sits anywhere below, so the branch opens to show it. */
+  keyWarningBelow: boolean
   children: MapNode[]
 }
 
@@ -51,10 +56,22 @@ export interface MapLink {
   afterNote?: string
 }
 
+/** A key spelt differently in the two versions, drawn as a dashed line between the two spellings. */
+export interface MapKeyWarning {
+  id: string
+  from?: string
+  to?: string
+  /** The whole warning, as in the list. */
+  text: string
+  beforeNote: string
+  afterNote: string
+}
+
 export interface ChangeMap {
   before: MapNode
   after: MapNode
   links: MapLink[]
+  keyWarnings: MapKeyWarning[]
 }
 
 /** Long JSON summaries would push the tree columns apart. */
@@ -63,7 +80,7 @@ const MAX_SUMMARY_LENGTH = 80
 function pointerAt(path: readonly PathSegment[], side: MapSide): string | undefined {
   let pointer = ''
   for (const segment of path) {
-    if (segment.kind === 'property') pointer += `/${encodeURIComponent(segment.name)}`
+    if (segment.kind === 'property') pointer += `/${encodeURIComponent(propertyNameAt(segment, side))}`
     else {
       const index = side === 'before' ? segment.beforeIndex : segment.afterIndex
       if (index === undefined) return undefined
@@ -107,6 +124,30 @@ interface BuildContext {
   labels: LabelSet
   /** Node id to the link that starts or ends there. The first link wins. */
   owners: ReadonlyMap<string, MapLink>
+  /** Node id to the key warning at that field. */
+  warnings: ReadonlyMap<string, MapKeyWarning>
+}
+
+function buildKeyWarning(warning: KeySpellingWarning, index: number): MapKeyWarning {
+  const result: MapKeyWarning = {
+    id: `key:${String(index)}`,
+    text: describeKeyWarning(warning).text,
+    beforeNote: keyWarningNote(warning, 'before'),
+    afterNote: keyWarningNote(warning, 'after'),
+  }
+  const from = nodeId('before', pointerAt(warning.path, 'before'))
+  const to = nodeId('after', pointerAt(warning.path, 'after'))
+  if (from !== undefined) result.from = from
+  if (to !== undefined) result.to = to
+  return result
+}
+
+function warningsByNode(warnings: readonly MapKeyWarning[]): Map<string, MapKeyWarning> {
+  const byNode = new Map<string, MapKeyWarning>()
+  for (const warning of warnings) {
+    for (const end of [warning.from, warning.to]) if (end !== undefined) byNode.set(end, warning)
+  }
+  return byNode
 }
 
 interface Place {
@@ -170,9 +211,11 @@ function buildNode(value: JsonValue, place: Place, ctx: BuildContext): MapNode {
   const status: NodeStatus = link?.kind ?? place.inherited
   const children = childPlaces(value, place, status, ctx.labels).map(([child, childPlace]) => buildNode(child, childPlace, ctx))
   const below = new Set<ChangeKind>()
+  let keyWarningBelow = false
   for (const child of children) {
     if (child.own && child.status !== 'unchanged') below.add(child.status)
     for (const kind of child.changesBelow) below.add(kind)
+    keyWarningBelow ||= child.keyWarningId !== undefined || child.keyWarningBelow
   }
   const node: MapNode = {
     id,
@@ -183,10 +226,13 @@ function buildNode(value: JsonValue, place: Place, ctx: BuildContext): MapNode {
     status,
     own: link !== undefined,
     changesBelow: [...below],
+    keyWarningBelow,
     children,
   }
   if (place.label !== undefined) node.label = place.label
   if (link !== undefined) node.linkId = link.id
+  const warning = ctx.warnings.get(id)
+  if (warning !== undefined) node.keyWarningId = warning.id
   return node
 }
 
@@ -198,7 +244,8 @@ function ownersOf(links: readonly MapLink[]): Map<string, MapLink> {
   return owners
 }
 
-function buildTree(resource: FhirResource, side: MapSide, labels: LabelSet, owners: ReadonlyMap<string, MapLink>): MapNode {
+function buildTree(resource: FhirResource, side: MapSide, base: Omit<BuildContext, 'side'>): MapNode {
+  const { labels } = base
   const profiles = selectProfiles(labels, [resource])
   const place: Place = {
     pointer: '',
@@ -208,13 +255,14 @@ function buildTree(resource: FhirResource, side: MapSide, labels: LabelSet, owne
     profiles,
     inherited: 'unchanged',
   }
-  return buildNode(resource, place, { side, labels, owners })
+  return buildNode(resource, place, { ...base, side })
 }
 
 /**
  * The data behind the change map: both versions of the resource as trees,
  * and one link per change that says which node in Före it starts at and which
- * node in Efter it ends at. Pure and free of layout, so the view only has to
+ * node in Efter it ends at. Keys spelt differently in the two versions get a
+ * key warning that joins the two spellings. Pure and free of layout, so the view only has to
  * place rows and draw arrows between them.
  */
 export function buildChangeMap(
@@ -222,12 +270,15 @@ export function buildChangeMap(
   after: FhirResource,
   descriptions: readonly ChangeDescription[],
   labels: LabelSet,
+  keyWarnings: readonly KeySpellingWarning[] = [],
 ): ChangeMap {
   const links = descriptions.map((description, index) => buildLink(description, index, labels.codes))
-  const owners = ownersOf(links)
+  const mapWarnings = keyWarnings.map(buildKeyWarning)
+  const base = { labels, owners: ownersOf(links), warnings: warningsByNode(mapWarnings) }
   return {
-    before: buildTree(before, 'before', labels, owners),
-    after: buildTree(after, 'after', labels, owners),
+    before: buildTree(before, 'before', base),
+    after: buildTree(after, 'after', base),
     links,
+    keyWarnings: mapWarnings,
   }
 }

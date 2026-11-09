@@ -5,7 +5,7 @@ import { detectMoves } from './detectMoves'
 import { diffValue } from './diffValue'
 import { createIgnoreMatcher } from './ignorePaths'
 import { DEFAULT_LIST_MATCH_KEYS } from './listMatchKeys'
-import type { DiffChange, DiffIgContext, DiffOptions, DiffResult, DiffWarning } from './types'
+import type { DiffChange, DiffIgContext, DiffOptions, DiffResult, DiffWarning, KeySpellingWarning } from './types'
 
 function igContext(manifest: IgManifest): DiffIgContext {
   return { packageId: manifest.packageId, version: manifest.version, pinned: isPinnedVersion(manifest.version) }
@@ -31,10 +31,13 @@ function collectWarnings(before: FhirResource, after: FhirResource): DiffWarning
  * ordered by position in the after version.
  *
  * Different resource types or ids are reported as warnings, not errors, so the
- * user still sees the full comparison and can judge for themselves.
+ * user still sees the full comparison and can judge for themselves. So are keys
+ * spelt differently in the two versions, e.g. valuePeriod and ValuePeriod:
+ * their values are compared as one field, and the spelling is a key warning.
  */
 export function diffResources(before: FhirResource, after: FhirResource, options: DiffOptions = {}): DiffResult {
   const changes: DiffChange[] = []
+  const keyWarnings: KeySpellingWarning[] = []
   const matchKeys = { ...DEFAULT_LIST_MATCH_KEYS, ...options.matchKeys }
   diffValue(before, after, {
     path: [],
@@ -42,12 +45,14 @@ export function diffResources(before: FhirResource, after: FhirResource, options
     matchKeys,
     isIgnored: createIgnoreMatcher(options.ignorePaths ?? []),
     changes,
+    keyWarnings,
   })
 
   const result: DiffResult = {
     resourceType: after.resourceType,
     changes: options.detectMoves === false ? changes : detectMoves(changes, matchKeys),
     warnings: collectWarnings(before, after),
+    keyWarnings,
   }
   if (options.ig !== undefined) result.ig = igContext(options.ig)
   return result

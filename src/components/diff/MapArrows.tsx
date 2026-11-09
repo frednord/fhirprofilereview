@@ -1,11 +1,12 @@
 import { useId } from 'react'
 import type { ChangeKind } from '../../core/diff'
-import { CHANGE_KINDS, type MapLink } from '../../core/reporting'
+import { CHANGE_KINDS, type MapKeyWarning, type MapLink } from '../../core/reporting'
 import type { MapGeometry } from '../../hooks/useRowPositions'
-import { KIND_FILL_CLASSES, KIND_STROKE_CLASSES } from './kindStyles'
+import { KEY_WARNING_STROKE_CLASS, KIND_FILL_CLASSES, KIND_STROKE_CLASSES } from './kindStyles'
 
 interface MapArrowsProps {
   links: readonly MapLink[]
+  keyWarnings: readonly MapKeyWarning[]
   geometry: MapGeometry
   active: string | undefined
   onHover: (linkId: string | undefined) => void
@@ -45,6 +46,40 @@ function shapeOf(link: MapLink, g: MapGeometry): Shape | undefined {
   return { path: `M ${g.leftX} ${fromY} C ${mid} ${fromY}, ${mid} ${toY}, ${endX} ${toY}` }
 }
 
+/** A dashed curve between the two spellings of a key; no head, since nothing moved. */
+function keyWarningPath(warning: MapKeyWarning, g: MapGeometry): string | undefined {
+  const fromY = warning.from === undefined ? undefined : g.rows.get(warning.from)
+  const toY = warning.to === undefined ? undefined : g.rows.get(warning.to)
+  if (fromY === undefined || toY === undefined) return undefined
+  const mid = (g.leftX + g.rightX) / 2
+  return `M ${g.leftX} ${fromY} C ${mid} ${fromY}, ${mid} ${toY}, ${g.rightX - HEAD_GAP} ${toY}`
+}
+
+interface KeyWarningLinesProps extends Omit<MapArrowsProps, 'links' | 'keyWarnings'> {
+  warnings: readonly MapKeyWarning[]
+}
+
+function KeyWarningLines({ warnings, geometry, active, onHover, onSelect }: KeyWarningLinesProps) {
+  return warnings.map((warning) => {
+    const path = keyWarningPath(warning, geometry)
+    if (path === undefined) return null
+    const dimmed = active !== undefined && active !== warning.id
+    return (
+      <g
+        key={warning.id}
+        data-key-warning-id={warning.id}
+        className={`transition-opacity ${dimmed ? 'opacity-15' : 'opacity-100'}`}
+        onMouseEnter={() => onHover(warning.id)}
+        onMouseLeave={() => onHover(undefined)}
+        onClick={() => onSelect(warning.id)}
+      >
+        <path d={path} fill="none" stroke="transparent" strokeWidth={12} className="pointer-events-auto cursor-pointer" />
+        <path d={path} fill="none" strokeWidth={active === warning.id ? 2.5 : 1.75} strokeDasharray="5 4" className={KEY_WARNING_STROKE_CLASS} />
+      </g>
+    )
+  })
+}
+
 function ArrowHeads({ prefix }: { prefix: string }) {
   return (
     <defs>
@@ -62,7 +97,7 @@ function hasHead(kind: ChangeKind): boolean {
 }
 
 /** The arrows of the change map, drawn over both trees. Hidden on narrow screens, where the notes in each row say the same. */
-export function MapArrows({ links, geometry, active, onHover, onSelect }: MapArrowsProps) {
+export function MapArrows({ links, keyWarnings, geometry, active, onHover, onSelect }: MapArrowsProps) {
   const prefix = useId().replace(/:/g, '')
   return (
     <svg
@@ -72,6 +107,7 @@ export function MapArrows({ links, geometry, active, onHover, onSelect }: MapArr
       height={geometry.height}
     >
       <ArrowHeads prefix={prefix} />
+      <KeyWarningLines warnings={keyWarnings} geometry={geometry} active={active} onHover={onHover} onSelect={onSelect} />
       {links.map((link) => {
         const shape = shapeOf(link, geometry)
         if (shape === undefined) return null
