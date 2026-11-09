@@ -29,3 +29,8 @@ export const KIND_ROW_CLASSES: Readonly<Record<ChangeKind, { own: string; inside
   changed: { own: 'bg-amber-100 ring-1 ring-amber-300', inside: 'bg-amber-50' },
   moved: { own: 'bg-sky-100 ring-1 ring-sky-300', inside: 'bg-sky-50' },
 }
+
+/** Key warnings are not changes, so they get a colour of their own and a dashed outline. */
+export const KEY_WARNING_BADGE_CLASSES = 'bg-orange-100 text-orange-900 border-orange-300'
+export const KEY_WARNING_ROW_CLASSES = 'bg-orange-50 outline-dashed outline-1 outline-orange-500'
+export const KEY_WARNING_STROKE_CLASS = 'stroke-orange-500'

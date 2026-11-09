@@ -1,4 +1,4 @@
-import { formatMovePaths, formatPath } from '../diff/formatPath'
+import { formatMovePaths, formatPath, propertyNameAt } from '../diff/formatPath'
 import type { DiffChange, DiffResult, PathSegment } from '../diff/types'
 import type { FhirResource } from '../../types/fhir'
 import type { JsonObject, JsonValue } from '../../types/json'
@@ -56,7 +56,7 @@ export function selectProfiles(labels: LabelSet, resources: readonly (JsonValue 
 }
 
 function step(value: JsonValue | undefined, segment: PathSegment, side: 'before' | 'after'): JsonValue | undefined {
-  if (segment.kind === 'property') return isJsonObject(value) ? value[segment.name] : undefined
+  if (segment.kind === 'property') return isJsonObject(value) ? value[propertyNameAt(segment, side)] : undefined
   const index = side === 'before' ? segment.beforeIndex : segment.afterIndex
   return isJsonArray(value) && index !== undefined ? value[index] : undefined
 }
@@ -119,14 +119,37 @@ function enterResource(walk: Walk, labels: LabelSet, isRoot: boolean): void {
   walk.rest = []
 }
 
+/**
+ * For a key spelt differently in the two versions, the spelling that the
+ * profile knows is used, so a typo on either side still gets its label.
+ */
+function knownSpelling(walk: Walk, segment: Extract<PathSegment, { kind: 'property' }>): string {
+  const after = `${walk.elementPath}.${segment.name}`
+  if (segment.beforeName === undefined || isKnownElement(walk.profiles, after)) return after
+  const before = `${walk.elementPath}.${segment.beforeName}`
+  return isKnownElement(walk.profiles, before) ? before : after
+}
+
+/** Whether label data names the element or anything below it, e.g. slices of a list. */
+function isKnownElement(profiles: readonly ProfileLabels[], elementPath: string): boolean {
+  const below = `${elementPath}.`
+  return profiles.some(
+    (profile) =>
+      Object.keys(profile.elements).some((path) => path === elementPath || path.startsWith(below)) ||
+      profile.slices.some((slice) => slice.element === elementPath || slice.element.startsWith(below)),
+  )
+}
+
 function visitProperty(walk: Walk, segment: Extract<PathSegment, { kind: 'property' }>): void {
-  walk.elementPath = `${walk.elementPath}.${segment.name}`
+  walk.elementPath = knownSpelling(walk, segment)
   const label = findElementLabel(walk.profiles, walk.elementPath)
   if (label !== undefined) {
     walk.anchor = { label, elementPath: walk.elementPath }
     walk.rest = []
   } else {
-    walk.rest.push(segment)
+    // Child labels are looked up by name, so the spelling chosen above is kept.
+    const name = walk.elementPath.slice(walk.elementPath.lastIndexOf('.') + 1)
+    walk.rest.push(name === segment.name ? segment : { kind: 'property', name })
   }
 }
 

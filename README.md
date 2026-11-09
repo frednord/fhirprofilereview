@@ -70,6 +70,17 @@ kan användas från UI, CLI och tester.
 - `formatPath` gör sökvägen läsbar: `identifier[system=urn:oid:1.2.752.29.4.19].value`.
 - Ett värde som bara finns på ena sidan rapporteras en gång, som helhet.
 - Olika `resourceType` eller `id` ger varningar, men jämförelsen görs ändå.
+- **Nycklar som stavas olika** (`keyWarnings`, `src/core/diff/keySpelling.ts`):
+  en nyckel som bara finns på ena sidan och nästan har samma namn som en nyckel
+  som bara finns på andra, t.ex. `valuePeriod` före och `ValuePeriod` efter,
+  rapporteras som en varning i stället för borttagen plus tillagd. Värdena
+  jämförs som samma fält, så ändringar under nyckeln syns ändå. Nycklar som bara
+  skiljer i stora och små bokstäver paras först, sedan nycklar med ett
+  stavfel (en bokstav för mycket, för lite, utbytt eller två bokstäver som bytt
+  plats). Stavfel räknas bara för namn med minst fem tecken, eftersom korta
+  FHIR-namn som `code` och `mode` ligger en bokstav ifrån varandra, och
+  `_birthDate` räknas aldrig som en felstavning av `birthDate`. Sökvägens sista
+  steg har `name` (stavningen efter) och `beforeName` (stavningen före).
 - **Flyttar** (`moved`) har både `path` (var värdet finns nu) och `from` (var det
   fanns förut). Bara exakta kopior räknas, så resultatet är deterministiskt; ett
   värde som både flyttats och ändrats blir fortfarande borttaget plus tillagt.
@@ -169,6 +180,10 @@ Allt körs i webbläsaren; inget skickas till någon server.
   följer kryssrutorna, och den som pekar eller klickar på ett fält eller en pil
   ser paret framhävt. På smala skärmar visas träden under varandra, och varje
   ändrat fält får en text som "Flyttad till …" i stället för pilar.
+  Nycklar som stavas olika står i en orange ruta ovanför listan och märks
+  "⚠ Stavning" i kartan, med en streckad orange linje mellan de två
+  stavningarna och en text som "Stavas "ValuePeriod" i Efter" under fältet.
+  Varningarna visas oavsett kryssrutorna, eftersom de inte är ändringar.
   Träden och kopplingarna byggs av `buildChangeMap` och `flattenMap` i
   `src/core/reporting`; komponenten mäter bara var raderna hamnade och ritar
   pilarna som SVG.

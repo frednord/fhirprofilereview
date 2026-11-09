@@ -1,5 +1,12 @@
 import type { PathSegment } from './types'
 
+type PropertySegment = Extract<PathSegment, { kind: 'property' }>
+
+/** The key as written in one version; differs between the sides only for a misspelt key. */
+export function propertyNameAt(segment: PropertySegment, side: 'before' | 'after'): string {
+  return side === 'before' ? (segment.beforeName ?? segment.name) : segment.name
+}
+
 function formatItem(segment: Extract<PathSegment, { kind: 'item' }>): string {
   if (segment.key !== undefined) {
     const parts = Object.entries(segment.key).map(([path, value]) => `${path}=${value}`)
@@ -30,8 +37,10 @@ export function formatPath(path: readonly PathSegment[]): string {
 export function formatPathAt(path: readonly PathSegment[], side: 'before' | 'after'): string {
   let text = ''
   for (const segment of path) {
-    if (segment.kind === 'property') text += text === '' ? segment.name : `.${segment.name}`
-    else {
+    if (segment.kind === 'property') {
+      const name = propertyNameAt(segment, side)
+      text += text === '' ? name : `.${name}`
+    } else {
       const index = side === 'before' ? (segment.beforeIndex ?? segment.afterIndex) : (segment.afterIndex ?? segment.beforeIndex)
       text += `[${String(index)}]`
     }

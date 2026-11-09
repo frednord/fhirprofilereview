@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import type { ChangeKind } from '../../core/diff'
 import { CHANGE_KINDS, flattenMap, KIND_LABELS, shownLinks, type ChangeMap as ChangeMapData } from '../../core/reporting'
 import { useRowPositions } from '../../hooks/useRowPositions'
-import { KIND_STROKE_CLASSES } from './kindStyles'
+import { KEY_WARNING_STROKE_CLASS, KIND_STROKE_CLASSES } from './kindStyles'
 import { MapArrows } from './MapArrows'
 import { MapTree } from './MapTree'
 
@@ -13,7 +13,7 @@ interface ChangeMapProps {
 
 const SMALL_BUTTON = 'rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-100'
 
-function Legend() {
+function Legend({ hasKeyWarnings }: { hasKeyWarnings: boolean }) {
   return (
     <ul aria-label="Förklaring" className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
       {CHANGE_KINDS.map((kind) => (
@@ -24,6 +24,14 @@ function Legend() {
           {KIND_LABELS[kind]}
         </li>
       ))}
+      {hasKeyWarnings && (
+        <li className="flex items-center gap-1.5">
+          <svg aria-hidden="true" width="22" height="6">
+            <line x1="0" y1="3" x2="22" y2="3" strokeWidth="2" strokeDasharray="4 3" className={KEY_WARNING_STROKE_CLASS} />
+          </svg>
+          Stavas olika
+        </li>
+      )}
       <li className="hidden sm:block">Peka på ett fält eller en pil för att se vad som hör ihop. Klicka för att låsa.</li>
     </ul>
   )
@@ -53,6 +61,7 @@ export function ChangeMap({ map, shownKinds }: ChangeMapProps) {
   // One key per layout, so the rows are measured again only when they change.
   const layoutKey = useMemo(() => [beforeRows, afterRows], [beforeRows, afterRows])
   const linkById = useMemo(() => new Map(links.map((link) => [link.id, link])), [links])
+  const keyWarningById = useMemo(() => new Map(map.keyWarnings.map((warning) => [warning.id, warning])), [map])
   const { container, left, right, geometry } = useRowPositions(layoutKey)
 
   const active = pinned ?? hovered
@@ -63,12 +72,12 @@ export function ChangeMap({ map, shownKinds }: ChangeMapProps) {
     setShowAll(all)
     setToggled(new Set())
   }
-  const treeProps = { links: linkById, active, onHover: setHovered, onSelect, onToggle }
+  const treeProps = { links: linkById, keyWarnings: keyWarningById, active, onHover: setHovered, onSelect, onToggle }
 
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <Legend />
+        <Legend hasKeyWarnings={map.keyWarnings.length > 0} />
         <div className="flex gap-2">
           <button type="button" onClick={() => expandAll(true)} className={SMALL_BUTTON}>
             Expandera alla
@@ -92,7 +101,7 @@ export function ChangeMap({ map, shownKinds }: ChangeMapProps) {
           <MapTree side="after" rows={afterRows} {...treeProps} />
         </section>
         {geometry !== undefined && (
-          <MapArrows links={links} geometry={geometry} active={active} onHover={setHovered} onSelect={onSelect} />
+          <MapArrows links={links} keyWarnings={map.keyWarnings} geometry={geometry} active={active} onHover={setHovered} onSelect={onSelect} />
         )}
       </div>
     </div>

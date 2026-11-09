@@ -42,9 +42,14 @@ function hasShownBelow(node: MapNode, kinds: ReadonlySet<ChangeKind>): boolean {
   return node.changesBelow.some((kind) => kinds.has(kind))
 }
 
-/** Rows that matter for the comparison: a shown change, or a branch leading to one. */
+/** Key warnings are always shown, whatever the kind filter, since they are not changes. */
+function opensByItself(node: MapNode, kinds: ReadonlySet<ChangeKind>): boolean {
+  return hasShownBelow(node, kinds) || node.keyWarningBelow
+}
+
+/** Rows that matter for the comparison: a shown change, a key warning, or a branch leading to one. */
 function isInteresting(node: MapNode, kinds: ReadonlySet<ChangeKind>): boolean {
-  return isShownOwn(node, kinds) || hasShownBelow(node, kinds)
+  return isShownOwn(node, kinds) || node.keyWarningId !== undefined || opensByItself(node, kinds)
 }
 
 function addChildren(node: MapNode, depth: number, inherited: NodeStatus, showEverything: boolean, ctx: FlattenContext): void {
@@ -78,12 +83,12 @@ function addChildren(node: MapNode, depth: number, inherited: NodeStatus, showEv
 function addNode(node: MapNode, depth: number, inherited: NodeStatus, ctx: FlattenContext): void {
   const own = isShownOwn(node, ctx.kinds)
   const status = own ? node.status : inherited
-  const opensByItself = ctx.showAll || hasShownBelow(node, ctx.kinds)
+  const opens = ctx.showAll || opensByItself(node, ctx.kinds)
   const toggled = ctx.toggled.has(node.id)
   const expandable = node.children.length > 0
-  const expanded = expandable && opensByItself !== toggled
+  const expanded = expandable && opens !== toggled
   ctx.rows.push({ type: 'node', id: node.id, node, depth, status, own, expandable, expanded })
-  if (expanded) addChildren(node, depth + 1, status, ctx.showAll || !opensByItself, ctx)
+  if (expanded) addChildren(node, depth + 1, status, ctx.showAll || !opens, ctx)
 }
 
 /**

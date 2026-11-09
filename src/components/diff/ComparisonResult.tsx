@@ -5,6 +5,7 @@ import { ChangeList } from './ChangeList'
 import { ChangeMap } from './ChangeMap'
 import { ChangeSummary } from './ChangeSummary'
 import { DiffWarnings } from './DiffWarnings'
+import { KeyWarnings } from './KeyWarnings'
 import { KindFilter } from './KindFilter'
 import { ViewSwitch, type ResultView } from './ViewSwitch'
 
@@ -31,12 +32,13 @@ export function ComparisonResult({ comparison, hiddenPath, shownKinds, onToggleK
       </div>
       <ChangeSummary counts={comparison.counts} shown={shownKinds} />
       <p className="text-sm text-slate-600">
-        {comparison.descriptions.length === 0 && 'Resurserna är lika. '}
+        {comparison.descriptions.length === 0 && (comparison.keyWarnings.length === 0 ? 'Resurserna är lika. ' : 'Värdena är lika. ')}
         {shownNote !== undefined && `${shownNote} `}
         {hiddenNote !== undefined && `${hiddenNote} `}
         {ig !== undefined && `Jämfört med etiketter från ${ig.packageId}@${ig.version}.`}
       </p>
       <DiffWarnings warnings={comparison.warnings} />
+      <KeyWarnings warnings={comparison.keyWarnings} />
       {view === 'list' && visible.length > 0 && <ChangeList descriptions={visible} />}
       {view === 'map' && <ChangeMap map={comparison.map} shownKinds={shownKinds} />}
     </div>

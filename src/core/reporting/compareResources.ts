@@ -8,6 +8,7 @@ import type { IgManifest } from '../profiles/igManifest'
 import type { FhirResource } from '../../types/fhir'
 import { buildChangeMap, type ChangeMap } from './changeMap'
 import { describeChanges } from './describeChanges'
+import { describeKeyWarning, type KeyWarningDescription } from './keyWarnings'
 import { countChanges, type ChangeCounts } from './summarizeChanges'
 import type { ChangeDescription, LabelSet } from './types'
 
@@ -34,6 +35,8 @@ export interface Comparison {
   descriptions: ChangeDescription[]
   counts: ChangeCounts
   warnings: string[]
+  /** Keys spelt differently in the two versions, e.g. valuePeriod and ValuePeriod. */
+  keyWarnings: KeyWarningDescription[]
   /** Changes left out because of ignorePaths, so the page can say that something was hidden. */
   hiddenCount: number
   /** Both versions as trees with one link per change, for the change map. */
@@ -130,7 +133,8 @@ function compare(before: FhirResource, after: FhirResource, settings: CompareSet
     descriptions,
     counts: countChanges(descriptions),
     warnings: diff.warnings.map(describeWarning),
+    keyWarnings: diff.keyWarnings.map(describeKeyWarning),
     hiddenCount,
-    map: buildChangeMap(before, after, descriptions, settings.labels),
+    map: buildChangeMap(before, after, descriptions, settings.labels, diff.keyWarnings),
   }
 }
