@@ -10,6 +10,8 @@ export {
   type Comparison,
   type InputStatus,
 } from './compareResources'
+export { buildChangeMap, type ChangeMap, type MapLink, type MapNode, type MapSide, type NodeStatus } from './changeMap'
+export { flattenMap, formatGroupLabel, shownLinks, type GroupRow, type MapRow, type NodeRow } from './changeMapRows'
 export { describeChange, describeChanges, selectProfiles } from './describeChanges'
 export { formatValue } from './formatValue'
 export {
