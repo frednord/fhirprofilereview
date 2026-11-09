@@ -30,7 +30,15 @@ export interface CompareSettings {
   ig?: IgManifest
 }
 
+/** Which resource a version is, for headings in reports. */
+export interface ResourceRef {
+  resourceType: string
+  id: string | undefined
+}
+
 export interface Comparison {
+  before: ResourceRef
+  after: ResourceRef
   diff: DiffResult
   descriptions: ChangeDescription[]
   counts: ChangeCounts
@@ -116,6 +124,10 @@ export function compareResources(beforeText: string, afterText: string, settings
   }
 }
 
+function resourceRef(resource: FhirResource): ResourceRef {
+  return { resourceType: resource.resourceType, id: getString(resource, 'id') }
+}
+
 function compare(before: FhirResource, after: FhirResource, settings: CompareSettings): Comparison {
   const options = { detectMoves: false, ...(settings.ig === undefined ? {} : { ig: settings.ig }) }
   const raw = diffResources(before, after, { ...options, ignorePaths: settings.ignorePaths })
@@ -129,6 +141,8 @@ function compare(before: FhirResource, after: FhirResource, settings: CompareSet
   const descriptions = describeChanges(before, after, diff, settings.labels)
 
   return {
+    before: resourceRef(before),
+    after: resourceRef(after),
     diff,
     descriptions,
     counts: countChanges(descriptions),
