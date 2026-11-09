@@ -10,10 +10,7 @@ export function jsonEqual(a: JsonValue, b: JsonValue): boolean {
     return isJsonArray(b) && a.length === b.length && a.every((item, index) => jsonEqual(item, b[index] ?? null))
   }
   if (isJsonObject(a)) {
-    if (!isJsonObject(b)) return false
-    const keys = Object.keys(a)
-    if (keys.length !== Object.keys(b).length) return false
-    return keys.every((key) => Object.hasOwn(b, key) && jsonEqual(a[key] ?? null, b[key] ?? null))
+    return isJsonObject(b) && Object.entries(a).every(([key, value]) => Object.hasOwn(b, key) && jsonEqual(value, b[key] ?? null))
   }
   return a === b
 }

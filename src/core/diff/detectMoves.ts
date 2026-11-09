@@ -176,11 +176,11 @@ function findPartner(
   isAvailable: (candidate: Node) => boolean,
   sourceIsFrom: boolean,
 ): Node | undefined {
-  return (buckets.get(fingerprint(source.value)) ?? []).find((candidate) => {
-    if (!isAvailable(candidate)) return false
+  const isPartner = (candidate: Node): boolean => {
     const [from, to] = sourceIsFrom ? [source, candidate] : [candidate, source]
     return isMeaningful(source.value, from.name, to.name) && jsonEqual(source.value, candidate.value)
-  })
+  }
+  return (buckets.get(fingerprint(source.value)) ?? []).find((candidate) => isAvailable(candidate) && isPartner(candidate))
 }
 
 interface MoveState {
