@@ -9,6 +9,7 @@ export {
   type CompareSettings,
   type Comparison,
   type InputStatus,
+  type ResourceRef,
 } from './compareResources'
 export { buildChangeMap, type ChangeMap, type MapKeyWarning, type MapLink, type MapNode, type MapSide, type NodeStatus } from './changeMap'
 export { flattenMap, formatGroupLabel, shownLinks, type GroupRow, type MapRow, type NodeRow } from './changeMapRows'
@@ -28,3 +29,19 @@ export {
   type ChangeCounts,
 } from './summarizeChanges'
 export type { ChangeDescription, DescriptionSource, ItemCondition, LabelSet, ProfileLabels, SliceLabel } from './types'
+export { formatChangePath } from './changePath'
+export {
+  buildReviewReport,
+  escapeHtml,
+  escapeMarkdown,
+  formatReportTime,
+  formatResourceRef,
+  renderReportHtml,
+  renderReportMarkdown,
+  REPORT_TITLE,
+  reportFileName,
+  type ReportEntry,
+  type ReportKeyWarning,
+  type ReportOptions,
+  type ReviewReport,
+} from './report'

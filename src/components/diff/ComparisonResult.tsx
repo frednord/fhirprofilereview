@@ -7,6 +7,7 @@ import { ChangeSummary } from './ChangeSummary'
 import { DiffWarnings } from './DiffWarnings'
 import { KeyWarnings } from './KeyWarnings'
 import { KindFilter } from './KindFilter'
+import { ReportExport } from './ReportExport'
 import { ViewSwitch, type ResultView } from './ViewSwitch'
 
 interface ComparisonResultProps {
@@ -30,7 +31,10 @@ export function ComparisonResult({ comparison, hiddenPath, shownKinds, onToggleK
         <KindFilter counts={comparison.counts} shown={shownKinds} onToggle={onToggleKind} />
         <ViewSwitch view={view} onChange={setView} />
       </div>
-      <ChangeSummary counts={comparison.counts} shown={shownKinds} />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <ChangeSummary counts={comparison.counts} shown={shownKinds} />
+        <ReportExport comparison={comparison} hiddenPath={hiddenPath} shownKinds={shownKinds} />
+      </div>
       <p className="text-sm text-slate-600">
         {comparison.descriptions.length === 0 && (comparison.keyWarnings.length === 0 ? 'Resurserna är lika. ' : 'Värdena är lika. ')}
         {shownNote !== undefined && `${shownNote} `}

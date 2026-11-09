@@ -1,5 +1,5 @@
-import { formatMovePaths, formatPath } from '../../core/diff'
-import { KIND_LABELS, type ChangeDescription } from '../../core/reporting'
+import { formatPath } from '../../core/diff'
+import { formatChangePath, KIND_LABELS, type ChangeDescription } from '../../core/reporting'
 import { KIND_BADGE_CLASSES } from './kindStyles'
 
 interface ChangeListProps {
@@ -12,7 +12,7 @@ export function ChangeList({ descriptions }: ChangeListProps) {
       {descriptions.map((description) => {
         const { change } = description
         const path = formatPath(change.path)
-        const shownPath = change.from === undefined ? path : formatMovePaths(change.from.path, change.path).join(' → ')
+        const shownPath = formatChangePath(change)
         return (
           <li key={`${change.kind}:${path}`} className="flex flex-col gap-1 p-3 sm:flex-row sm:items-start sm:gap-3">
             <span
