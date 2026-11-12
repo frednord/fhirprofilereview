@@ -52,7 +52,9 @@ describe('ComparePage', () => {
     render(<ComparePage />)
     paste('Före', '{"resourceType": ')
     paste('Efter', rawFixture(UNIT))
-    expect(screen.getByRole('alert')).toHaveTextContent('Texten är inte giltig JSON (rad 1, kolumn 18).')
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Texten är inte giltig JSON (rad 1, kolumn 18): texten tar slut för tidigt. Kontrollera att alla klamrar och citattecken stängs.',
+    )
     expect(screen.getByRole('button', { name: 'Jämför' })).toBeDisabled()
   })
 

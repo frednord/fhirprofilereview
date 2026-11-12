@@ -14,9 +14,17 @@ Allt körs i webbläsaren; inget skickas till någon server.
   sparning. Sidan säger hur många ändringar som doldes. Sökvägen, standardvalet
   och texterna (`LAST_UPDATED_PATH`, `formatHiddenNote`, `KIND_LABELS`) ligger i
   `src/core/reporting`, så att UI:t bara ritar upp dem.
-- **Ogiltig JSON** får rad och kolumn på svenska. Chrome och Node säger inte
+- **Ogiltig JSON** får rad, kolumn och vad som är fel på svenska, t.ex.
+  "Texten är inte giltig JSON (rad 4, kolumn 1): kommatecken före ”}”. JSON
+  tillåter inget kommatecken efter sista värdet." Chrome och Node säger inte
   längre var `JSON.parse` stannade, så `src/core/parser/jsonErrorLocation.ts`
-  hittar platsen själv.
+  hittar platsen och felets typ själv. Typerna täcker de vanligaste misstagen
+  vid handredigerad eller kopierad JSON: kommatecken efter sista värdet,
+  saknat kommatecken eller kolon, enkla eller typografiska citattecken,
+  kommentarer, nycklar utan citattecken, fel sorts klammer, radbrytning inne i
+  en text, okända ord som `True` eller `undefined`, ogiltiga tal, text efter
+  resursens slut och osynliga tecken som hårt mellanslag. Texterna finns i
+  `src/core/parser/jsonProblems.ts`.
 - **Kryssrutorna Tillagda, Borttagna, Ändrade och Flyttade** väljer vilka ändringstyper
   som visas i rubriken och listan. Alla är ikryssade från början, och valet
   ligger kvar mellan jämförelser. När valet döljer ändringar står det t.ex.

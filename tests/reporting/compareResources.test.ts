@@ -24,11 +24,11 @@ describe('inspectInput', () => {
     expect(inspectInput('{"name":"x"}')).toEqual({ ok: false, empty: false, message: 'Resursen saknar resourceType.' })
   })
 
-  it('gives the line and column of invalid JSON in Swedish', () => {
+  it('says where invalid JSON stops and what is wrong, in Swedish', () => {
     expect(inspectInput('{\n  "resourceType": "Organization",\n  "name": \n}')).toEqual({
       ok: false,
       empty: false,
-      message: 'Texten är inte giltig JSON (rad 4, kolumn 1).',
+      message: 'Texten är inte giltig JSON (rad 4, kolumn 1): ett värde saknas före ”}”.',
     })
   })
 })

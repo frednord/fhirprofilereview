@@ -2,6 +2,7 @@ import { detectMoves } from '../diff/detectMoves'
 import { diffResources } from '../diff/diffResources'
 import type { DiffResult, DiffWarning } from '../diff/types'
 import { locateJsonError } from '../parser/jsonErrorLocation'
+import { describeJsonProblem } from '../parser/jsonProblems'
 import { getString } from '../parser/narrowing'
 import { parseResource } from '../parser/parseResource'
 import type { IgManifest } from '../profiles/igManifest'
@@ -69,8 +70,9 @@ function errorDetail(error: unknown): string {
 
 /**
  * Reads one input and says, in Swedish, what it is or why it cannot be used.
- * Invalid JSON gets the line and column where parsing stopped, since the
- * browser's own message is in English and often says nothing about where.
+ * Invalid JSON gets the line and column where parsing stopped and what is
+ * wrong there, since the browser's own message is in English and often says
+ * nothing about where or why.
  */
 export function inspectInput(text: string): InputStatus {
   // Runs on every keystroke. An unexpected error here would reach the error
@@ -90,9 +92,14 @@ function readInput(text: string): InputStatus {
   }
   const { error } = parsed
   if (error.kind !== 'invalid-json') return { ok: false, empty: error.kind === 'empty-input', message: error.message }
-  const location = locateJsonError(text)
-  const where = location === undefined ? '' : ` (rad ${location.line}, kolumn ${location.column})`
-  return { ok: false, empty: false, message: `Texten är inte giltig JSON${where}.` }
+  const syntaxError = locateJsonError(text)
+  if (syntaxError === undefined) return { ok: false, empty: false, message: 'Texten är inte giltig JSON.' }
+  const { line, column, problem } = syntaxError
+  return {
+    ok: false,
+    empty: false,
+    message: `Texten är inte giltig JSON (rad ${line}, kolumn ${column}): ${describeJsonProblem(problem)}.`,
+  }
 }
 
 export function describeWarning(warning: DiffWarning): string {
