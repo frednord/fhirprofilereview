@@ -73,6 +73,6 @@ describe('deeply nested input', () => {
   })
 
   it('still locates errors in invalid JSON within the limit', () => {
-    expect(locateJsonError(`${'['.repeat(10)}1,]`)).toEqual({ line: 1, column: 13 })
+    expect(locateJsonError(`${'['.repeat(10)}1,]`)).toMatchObject({ line: 1, column: 13, problem: { kind: 'trailing-comma' } })
   })
 })
