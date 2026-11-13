@@ -1,5 +1,8 @@
 # FHIR Profile Review Assistant
 
+[![CI](https://github.com/frednord/fhirprofilereview/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/frednord/fhirprofilereview/actions/workflows/ci.yml)
+[![Deploy](https://github.com/frednord/fhirprofilereview/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/frednord/fhirprofilereview/actions/workflows/deploy.yml)
+
 Jämför två versioner av en FHIR R5-resurs och visa vad som ändrats, på svenska
 och i FHIR-termer, i stället för som en rå JSON-diff. Där en vanlig diff säger
 `identifier[0].value changed` säger verktyget ”HSA-id ändrades från ”X” till
