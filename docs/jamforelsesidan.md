@@ -14,6 +14,12 @@ Allt körs i webbläsaren; inget skickas till någon server.
   sparning. Sidan säger hur många ändringar som doldes. Sökvägen, standardvalet
   och texterna (`LAST_UPDATED_PATH`, `formatHiddenNote`, `KIND_LABELS`) ligger i
   `src/core/reporting`, så att UI:t bara ritar upp dem.
+- **Filer** läses in med `src/utils/readTextFile.ts`, högst 5 MB
+  (`MAX_FILE_BYTES`). En för stor fil får sin storlek och gränsen i
+  meddelandet ("Filen x är 7,2 MB och läses inte in, eftersom gränsen är
+  5 MB …"), en tom fil sägs vara tom, och ett läsfel förklaras utifrån
+  webbläsarens orsak (filen borttagen, låst eller inte tillåten) med ett råd om
+  vad man kan göra.
 - **Ogiltig JSON** får rad, kolumn och vad som är fel på svenska, t.ex.
   "Texten är inte giltig JSON (rad 4, kolumn 1): kommatecken före ”}”. JSON
   tillåter inget kommatecken efter sista värdet." Chrome och Node säger inte
