@@ -3,8 +3,8 @@
 [![CI](https://github.com/frednord/fhirprofilereview/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/frednord/fhirprofilereview/actions/workflows/ci.yml)
 [![Deploy](https://github.com/frednord/fhirprofilereview/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/frednord/fhirprofilereview/actions/workflows/deploy.yml)
 
-Jämför två versioner av en FHIR R5-resurs och visa vad som ändrats, på svenska
-och i FHIR-termer, i stället för som en rå JSON-diff. Där en vanlig diff säger
+Jämför två versioner av en FHIR R5-resurs och visar vad som ändrats, på svenska
+och i FHIR-termer, i stället för som en ren JSON-diff. Där en vanlig diff säger
 `identifier[0].value changed` säger verktyget ”HSA-id ändrades från ”X” till
 ”Y””. Byggt för E-hälsomyndighetens HVO-profiler (Swedish Provider Directory).
 
@@ -95,8 +95,6 @@ varje del finns i [docs/](docs/README.md).
 
 - **Ingen profilvalidering än.** Verktyget jämför två versioner men kontrollerar
   inte kardinalitet, bindningar eller constraints mot profilen. Det är planerat.
-- **Ingen AI-sammanfattning än.** Den är planerad som valfritt komplement; alla
-  resultat i dag är deterministiska.
 - **Bara HVO 0.5.1 har svenska etiketter.** Andra resurser och profiler jämförs
   korrekt, men fälten visas med sin FHIR-sökväg i stället för ett svenskt namn.
 - **Stora listor är långsamma.** Matchningen av listor växer kvadratiskt: 3 000
