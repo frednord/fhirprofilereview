@@ -132,6 +132,13 @@ describe('describeChanges fallback', () => {
     ])
   })
 
+  it('names an empty value instead of ending the sentence with nothing', () => {
+    const before = resource('Organization')
+    const after = resource('Organization', { alias: [], contact: [{ telecom: [] }] })
+    expect(texts(before, after)).toEqual(['Alternativt namn lades till: (tom lista)', 'Kontakt lades till: (tomt värde)'])
+    expect(texts(after, before)).toEqual(['Alternativt namn togs bort (var (tom lista))', 'Kontakt togs bort (var (tomt värde))'])
+  })
+
   it('gives the same output for the same input', () => {
     const [before, after] = edited(UNIT, (a) => {
       a['name'] = 'Ny'

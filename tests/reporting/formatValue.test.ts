@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { HVO_CODE_LABELS } from '../../src/core/profiles/hvo/0.5.1/codes'
 import { formatValue } from '../../src/core/reporting'
+import type { JsonValue } from '../../src/types/json'
 
 const show = (value: Parameters<typeof formatValue>[0]) => formatValue(value, HVO_CODE_LABELS)
 
@@ -45,5 +46,20 @@ describe('formatValue', () => {
   it('shows unknown objects as shortened JSON', () => {
     expect(show({ a: 1 })).toBe('{"a":1}')
     expect(show({ a: 'x'.repeat(200) })).toHaveLength(120)
+  })
+
+  it.each<[string, JsonValue, string]>([
+    ['an empty list', [], '(tom lista)'],
+    ['a contact without telecom or address', { telecom: [] }, '(tomt värde)'],
+    ['an address without lines, postal code or city', { line: [] }, '(tomt värde)'],
+    ['a CodeableConcept without codings', { coding: [] }, '(tomt värde)'],
+    ['an empty reference', { reference: '' }, '(tomt värde)'],
+    ['a list of empty contacts', [{ telecom: [] }], '(tomt värde)'],
+  ])('never shows %s as nothing', (_name, value, expected) => {
+    expect(show(value)).toBe(expected)
+  })
+
+  it('leaves empty parts out of a list that has other content', () => {
+    expect(show([{ system: 'phone', value: '08-123' }, { telecom: [] }])).toBe('telefon 08-123')
   })
 })

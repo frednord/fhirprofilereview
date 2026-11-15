@@ -29,6 +29,9 @@ Det är deterministiskt och utan AI.
 - **Reserv:** en ändring utan regel beskrivs med sin sökväg ("Fältet language
   lades till: ”sv”") och markeras med `source: 'fallback'`, så att det syns
   vilka regler som saknas.
+- **Tomma värden** visas som "(tom lista)" eller "(tomt värde)", t.ex.
+  "Alternativt namn lades till: (tom lista)", så att en mening aldrig slutar
+  utan värde. Inne i en lista med annat innehåll hoppas tomma delar över.
 - Kända begränsningar: koder visas med svenskt namn bara för de kodverk som finns
   i etikettdatan (kontaktsyfte, organisations- och enhetstyp, län, kontaktsätt);
   övriga koder, t.ex. verksamhetskoder, visas som rå kod. Kommun- och länskod har
