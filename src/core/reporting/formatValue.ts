@@ -5,6 +5,10 @@ export const CONTACT_POINT_SYSTEM = 'http://hl7.org/fhir/contact-point-system'
 
 const MAX_JSON_LENGTH = 120
 
+/** Shown instead of nothing, so a sentence such as "Alias lades till: " never ends in thin air. */
+export const EMPTY_LIST_TEXT = '(tom lista)'
+export const EMPTY_VALUE_TEXT = '(tomt värde)'
+
 type CodeLabels = Readonly<Record<string, string>>
 
 /** Swedish name of a code, or undefined when the label data does not cover it. */
@@ -62,7 +66,7 @@ function isContactPoint(obj: JsonObject, codes: CodeLabels): boolean {
  */
 function formatObject(obj: JsonObject, codes: CodeLabels): string {
   if (typeof obj['resourceType'] === 'string') return `${obj['resourceType']}/${getString(obj, 'id') ?? '?'}`
-  if (typeof obj['url'] === 'string' && choiceValue(obj) !== undefined) return formatValue(choiceValue(obj) ?? null, codes)
+  if (typeof obj['url'] === 'string' && choiceValue(obj) !== undefined) return formatPart(choiceValue(obj) ?? null, codes)
   if (typeof obj['code'] === 'string' && ('system' in obj || 'display' in obj)) return formatCoding(obj, codes)
   if (isJsonArray(obj['coding'])) return joinParts(getArray(obj, 'coding').filter(isJsonObject).map((c) => formatCoding(c, codes)))
   if (typeof obj['reference'] === 'string') return getString(obj, 'reference') ?? ''
@@ -88,12 +92,22 @@ function truncate(text: string): string {
   return text.length <= MAX_JSON_LENGTH ? text : `${text.slice(0, MAX_JSON_LENGTH - 1)}…`
 }
 
-/** Renders a value from a diff for a Swedish sentence. */
-export function formatValue(value: JsonValue, codes: CodeLabels): string {
+/**
+ * May return an empty string, e.g. for a contact without telecom or address,
+ * so that empty parts can be left out when a list is joined.
+ */
+function formatPart(value: JsonValue, codes: CodeLabels): string {
   if (value === null) return 'null'
   if (typeof value === 'boolean') return value ? 'ja' : 'nej'
   if (typeof value === 'number') return String(value)
   if (typeof value === 'string') return quote(value)
-  if (isJsonArray(value)) return joinParts(value.map((item) => formatValue(item, codes)))
+  if (isJsonArray(value)) return joinParts(value.map((item) => formatPart(item, codes)))
   return formatObject(value, codes)
+}
+
+/** Renders a value from a diff for a Swedish sentence. Never empty. */
+export function formatValue(value: JsonValue, codes: CodeLabels): string {
+  const text = formatPart(value, codes)
+  if (text !== '') return text
+  return isJsonArray(value) && value.length === 0 ? EMPTY_LIST_TEXT : EMPTY_VALUE_TEXT
 }
